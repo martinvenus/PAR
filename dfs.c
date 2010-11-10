@@ -76,8 +76,6 @@ void memoryFreeStack(Stack *s) {
 
 void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
 
-    //printf("\nTest2: %i\n", m[0][2]);
-
     int x = 0;
     int sousede = 0;
 
@@ -87,13 +85,14 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
     aktualniVrchol = 0;
     m[aktualniVrchol][aktualniVrchol] = 2;
     push(s, aktualniVrchol); // vložím aktuílní vrchol do zásobníku
+    //printf("Vrchol %i vlozen do zasobniku\n", aktualniVrchol);
 
     // BEGIN: TESTUJI JEDEN SLOUPEC
 
     while (!(isEmpty(s))) {
 
         aktualniVrchol = pop(s);
-        //printf ("Aktualni vrchol je %i\n", aktualniVrchol.id);
+        //printf("Vrchol %i vybran ze zasobniku\n", aktualniVrchol);
         coloring(aktualniVrchol,pocetVrcholu);
 
         sousede = 0;
@@ -105,7 +104,7 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
                 v = x;
                 m[x][x] = 2;
                 push(s, v); // vložím aktuílní vrchol do zásobníku
-                //printf("Objeven novy soused %i\n", x);
+                //printf("Vrchol %i vlozen do zasobniku\n", x);
                 sousede++;
             }
         }
