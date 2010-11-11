@@ -27,7 +27,7 @@ void push(Stack *s, int value) {
 }
 
 int pop(Stack *s) {
-    if (s->top > 0) {
+    if (s->top > s->bottom) {
         (s->top)--;
         return (s->array[s->top]);
     } else {
@@ -36,8 +36,22 @@ int pop(Stack *s) {
     /*  Equivalent to: return (S->v[--(S->top)]);  */
 }
 
+int popBottom(Stack *s) {
+    if (s->bottom < s->top) {
+        (s->bottom)++;
+        return (s->array[s->bottom]);
+    } else {
+        return -1;
+    }
+}
+
+int countNodes(Stack *s) {
+    return s->top - s->bottom;
+}
+
 void init(Stack *s, int size) {
     s->top = 0;
+    s->bottom = 0;
 
     s->array = malloc(size * sizeof (int));
 
@@ -54,16 +68,16 @@ int full(Stack *s) {
 }
 
 int isEmpty(Stack *s) {
-    return (s->top == 0);
+    return (s->top == s->bottom);
 }
 
 void stackPrint(Stack *s) {
     int i;
-    if (s->top == 0)
+    if (s->top == s->bottom)
         printf("\nStack is empty.\n");
     else {
         printf("\nStack contents: \n");
-        for (i = 0; i < s->top; i++) {
+        for (i = s->bottom; i < s->top; i++) {
             printf("ID: %i, ", s->array[i]);
         }
         printf("\n");
@@ -91,9 +105,35 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
 
     while (!(isEmpty(s))) {
 
+        //printf("Pocet prvku v zasobniku: %i\n", countNodes(s));
+
         aktualniVrchol = pop(s);
         //printf("Vrchol %i vybran ze zasobniku\n", aktualniVrchol);
-        coloring(aktualniVrchol,pocetVrcholu);
+
+
+/*
+        // BEGIN IF SOMEONE NEEDS JOB
+
+        // pokud jsme pred chvili nevybrali posledni prvek, posleme prvky
+        // jinak posleme zpravu ze mame prazdny zasobnik
+        if (!(isEmpty(s))) {
+
+            int i = 0;
+            printf("--------------\n");
+            for (i = s->bottom; i <= (countNodes(s) / 2); i++) {
+                printf("ODEBERU: %i\n", popBottom(s));
+            }
+            printf("--------------\n");
+
+        }
+        else{
+            printf("Mam prazdny zasobnik.\n");
+        }
+
+        // END IF SOMEONE NEEDS JOB
+*/
+
+        coloring(aktualniVrchol, pocetVrcholu);
 
         sousede = 0;
         for (x = 0; x < pocetVrcholu; x++) {
@@ -116,7 +156,7 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
         }
 
         // END: TESTUJI JEDEN SLOUPEC
-        
+
     }
 
     //stackPrint(s);
