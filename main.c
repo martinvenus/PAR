@@ -13,6 +13,11 @@
 #include "dfs.h"
 
 /*
+ * Globální proměnná udržující číslo procesoru na kterém úloha běží
+ */
+int my_rank;
+
+/*
  * Výchozí velikost zásobníku (při vytvoření)
  */
 #define INIT_STACK_SIZE 50
@@ -26,7 +31,6 @@ int main(int argc, char** argv) {
     /*
      * Inicializace a nastavení knihovny MPI
      */
-    int my_rank;
     int p;
     MPI_Status status;
 
@@ -78,22 +82,32 @@ int main(int argc, char** argv) {
     MPI_Bcast(&pocetVrcholu, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
     if (my_rank > 0) {
-        int matrix[pocetVrcholu][pocetVrcholu];
+        /*
+         * Alokace paměti pro matici
+         */
+        maticeSousednosti = malloc(pocetVrcholu * sizeof (int *));
+
+        int i = 0;
+        for (i = 0; i < pocetVrcholu; i++) {
+
+            maticeSousednosti[i] = malloc(pocetVrcholu * sizeof (int));
+        }
+
+
+        //int matrix[pocetVrcholu][pocetVrcholu];
 
         printf("procesor %d přijímá\n", my_rank);
 
         int l = 0;
         for (l = 0; l < pocetVrcholu; l++) {
-            MPI_Recv(&matrix[l], pocetVrcholu, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
+            MPI_Recv(maticeSousednosti[l], pocetVrcholu, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
         }
 
-        printf("Matice(1): %d\n", matrix[pocetVrcholu-1][pocetVrcholu-1-1]);
+        printf("Matice(1): %d\n", maticeSousednosti[pocetVrcholu - 1][pocetVrcholu - 1 - 1]);
 
     }
 
     //printf("Počet vrcholů: %i\n", pocetVrcholu);
-
-    /*
 
     Stack s;
 
@@ -116,7 +130,6 @@ int main(int argc, char** argv) {
 
     memoryFreeStack(&s);
     memoryFreeArray();
-     */
 
     /* shut down MPI */
     MPI_Finalize();
