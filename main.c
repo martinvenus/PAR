@@ -13,14 +13,21 @@
 #include "dfs.h"
 
 /*
- * Globální proměnná udržující číslo procesoru na kterém úloha běží
+ * Globální proměnné pro práci s MPI
  */
 int my_rank;
+int root = 0;
+int process = 0;
 
 /*
  * Výchozí velikost zásobníku (při vytvoření)
  */
 #define INIT_STACK_SIZE 50
+
+/*
+ * Definice jednotlivých tagů při posílání zpráv
+ */
+#define MESSAGE_MATRIX 0
 
 /*
  * @param argc počet argumentů zadaných při spuštění programu
@@ -31,7 +38,6 @@ int main(int argc, char** argv) {
     /*
      * Inicializace a nastavení knihovny MPI
      */
-    int p;
     MPI_Status status;
 
     /* start up MPI */
@@ -41,7 +47,7 @@ int main(int argc, char** argv) {
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 
     /* find out number of processes */
-    MPI_Comm_size(MPI_COMM_WORLD, &p);
+    MPI_Comm_size(MPI_COMM_WORLD, &process);
     /*
      * Inicializace dokončena
      */
@@ -74,7 +80,7 @@ int main(int argc, char** argv) {
         for (k = 1; k < p; k++) {
             int l = 0;
             for (l = 0; l < pocetVrcholu; l++) {
-                MPI_Send(maticeSousednosti[l], pocetVrcholu, MPI_INT, k, 0, MPI_COMM_WORLD);
+                MPI_Send(maticeSousednosti[l], pocetVrcholu, MPI_INT, k, MESSAGE_MATRIX, MPI_COMM_WORLD);
             }
         }
     }
@@ -100,14 +106,12 @@ int main(int argc, char** argv) {
 
         int l = 0;
         for (l = 0; l < pocetVrcholu; l++) {
-            MPI_Recv(maticeSousednosti[l], pocetVrcholu, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
+            MPI_Recv(maticeSousednosti[l], pocetVrcholu, MPI_INT, root, MESSAGE_MATRIX, MPI_COMM_WORLD, &status);
         }
 
         printf("Matice(1): %d\n", maticeSousednosti[pocetVrcholu - 1][pocetVrcholu - 1 - 1]);
 
     }
-
-    //printf("Počet vrcholů: %i\n", pocetVrcholu);
 
     Stack s;
 
@@ -118,15 +122,10 @@ int main(int argc, char** argv) {
     setMaticeSousednosti(maticeSousednosti);
     DFS_analyse(&s, maticeSousednosti, pocetVrcholu);
 
-    //Uvolníme paměť alokovanou pro matici
-    //free(DFS);
-
     findBestColouring();
     setBestSolutionToMatrix(pocetVrcholu);
 
     memoryFreeMatrix(maticeSousednosti, pocetVrcholu);
-
-    //showData();
 
     memoryFreeStack(&s);
     memoryFreeArray();
