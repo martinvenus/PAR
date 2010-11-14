@@ -22,7 +22,7 @@ int idBestSolution = -1;
 int countColorBestSolution = -1;
 
 Config* poleKonfiguraci;
-int** maticeSousednosti;
+extern int** maticeSousednosti;
 
 void coloring(int idNovehoVrcholu, int pocetVrcholu) {
 
@@ -159,7 +159,7 @@ void addVrchol(int konfigurace, int vrchol, int barva, int pocetVrcholu) {
     }
 
 
-    showData();
+    //showData();
 
     isCurrentConfigurationOver = 1;
 }
@@ -185,11 +185,6 @@ Prvek* copyArray(Prvek* sourceArray, int pocetVrcholu, int pocetPrvku) {
     return array;
 }
 
-void setMaticeSousednosti(int** matrix) {
-
-    maticeSousednosti = matrix;
-}
-
 int sousedi(int vrchol1, int vrchol2) {
     if (maticeSousednosti[vrchol1][vrchol2] == 1) {
 
@@ -202,7 +197,7 @@ int sousedi(int vrchol1, int vrchol2) {
 /*
  * Funkce uvolní paměť, která byla alokována pro pole
  */
-void memoryFreeArray() {
+void memoryFreeConfigurationArray() {
     int i = 0;
 
     for (i = 0; i < pocetKonfiguraci; i++) {
@@ -242,13 +237,18 @@ void findBestColouring() {
 
 void setBestSolutionToMatrix(int pocetVrcholu) {
     int i = 0;
-    int j = 0;
 
     for (i = 0; i < pocetPrvku; i++) {
         maticeSousednosti[ poleKonfiguraci[idBestSolution].array[i].vrchol ][ poleKonfiguraci[idBestSolution].array[i].vrchol ] = poleKonfiguraci[idBestSolution].array[i].barva;
     }
 
+}
+
+void printBestSolution(int pocetVrcholu) {
     printf("Pocet pouzitych barev: %i\n", countColorBestSolution);
+
+    int i = 0;
+    int j = 0;
 
     for (i = 0; i < pocetVrcholu; i++) {
         for (j = 0; j < pocetVrcholu; j++) {
@@ -256,6 +256,4 @@ void setBestSolutionToMatrix(int pocetVrcholu) {
         }
         printf("\n");
     }
-
-
 }

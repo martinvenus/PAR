@@ -19,13 +19,14 @@ typedef struct {
 } Config;
 
 void coloring(int vrchol, int pocetVrcholu);
-void memoryFreeArray();
+void memoryFreeConfigurationArray();
 Prvek* copyArray(Prvek* sourceArray, int pocetVrcholu, int pocetPrvku);
 void setMaticeSousednosti(int** matrix);
 int sousedi(int vrchol1, int vrchol2);
 void addVrchol(int konfigurace, int vrchol, int barva, int pocetVrcholu);
 void findBestColouring();
 void setBestSolutionToMatrix(int pocetVrcholu);
+void printBestSolution(int pocetVrcholu);
 
 #endif	/* MBG_H */
 

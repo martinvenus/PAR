@@ -17,7 +17,12 @@
  */
 int my_rank;
 int root = 0;
-int process = 0;
+int processSum = 0;
+
+/*
+ * Globální proměnné pro práci s grafem
+ */
+int** maticeSousednosti;
 
 /*
  * Výchozí velikost zásobníku (při vytvoření)
@@ -47,16 +52,15 @@ int main(int argc, char** argv) {
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 
     /* find out number of processes */
-    MPI_Comm_size(MPI_COMM_WORLD, &process);
+    MPI_Comm_size(MPI_COMM_WORLD, &processSum);
     /*
      * Inicializace dokončena
      */
 
-    int** maticeSousednosti;
     int pocetVrcholu;
 
 
-    if (my_rank == 0) {
+    if (my_rank == root) {
 
         char inputFile[255] = "";
 
@@ -77,7 +81,7 @@ int main(int argc, char** argv) {
         pocetVrcholu = getPocetVrcholu();
 
         int k = 0;
-        for (k = 1; k < p; k++) {
+        for (k = 1; k < processSum; k++) {
             int l = 0;
             for (l = 0; l < pocetVrcholu; l++) {
                 MPI_Send(maticeSousednosti[l], pocetVrcholu, MPI_INT, k, MESSAGE_MATRIX, MPI_COMM_WORLD);
@@ -89,7 +93,7 @@ int main(int argc, char** argv) {
 
     if (my_rank > 0) {
         /*
-         * Alokace paměti pro matici
+         * Alokace paměti pro matici sousednosti
          */
         maticeSousednosti = malloc(pocetVrcholu * sizeof (int *));
 
@@ -99,17 +103,12 @@ int main(int argc, char** argv) {
             maticeSousednosti[i] = malloc(pocetVrcholu * sizeof (int));
         }
 
-
-        //int matrix[pocetVrcholu][pocetVrcholu];
-
-        printf("procesor %d přijímá\n", my_rank);
-
         int l = 0;
         for (l = 0; l < pocetVrcholu; l++) {
             MPI_Recv(maticeSousednosti[l], pocetVrcholu, MPI_INT, root, MESSAGE_MATRIX, MPI_COMM_WORLD, &status);
         }
 
-        printf("Matice(1): %d\n", maticeSousednosti[pocetVrcholu - 1][pocetVrcholu - 1 - 1]);
+        //printf("Matice(1): %d\n", maticeSousednosti[pocetVrcholu - 1][pocetVrcholu - 1 - 1]);
 
     }
 
@@ -119,16 +118,22 @@ int main(int argc, char** argv) {
 
     //stackPrint(&S);
 
-    setMaticeSousednosti(maticeSousednosti);
     DFS_analyse(&s, maticeSousednosti, pocetVrcholu);
 
+    /*
+     * Nalezneme nejlepší řešení a zapíšeme ho na diagonálu matice sousednosti
+     */
     findBestColouring();
     setBestSolutionToMatrix(pocetVrcholu);
+    printBestSolution(pocetVrcholu);
 
+    /*
+     * Uvolníme paměť alokovanou pro jednotlivé struktury
+     */
     memoryFreeMatrix(maticeSousednosti, pocetVrcholu);
 
     memoryFreeStack(&s);
-    memoryFreeArray();
+    memoryFreeConfigurationArray();
 
     /* shut down MPI */
     MPI_Finalize();
