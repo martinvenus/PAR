@@ -210,20 +210,28 @@ void answerJobRequests() {
                 // pokud mame predpocitano vice nez jedno reseni a jeste mame co pocitat
                 if ((getPocetKonfiguraci() > 1) && (!isEmpty(s))) {
 
-                    int l = 0;
-                    for (l = 0; l < (pocetKonfiguraci / 2); l++) {
-                        MPI_Send(maticeSousednosti[l], pocetVrcholu, MPI_INT, k, MESSAGE_MATRIX, MPI_COMM_WORLD);
-                    }
+                    int konfiguraceKOdeslani = (pocetKonfiguraci / 2);
+                    int novyPocetKonfiguraci = pocetKonfiguraci - (pocetKonfiguraci / 2);
 
-                    pocetKonfiguraci = pocetKonfiguraci - (pocetKonfiguraci / 2);
+                    MPI_Send(&konfiguraceKOdeslani, 1, MPI_INT, source, MESSAGE_JOB_REQUIRE_ANSWER, MPI_COMM_WORLD);
 
+                    /*
+                                        int l = 0;
+                                        for (l = 0; l < konfiguraceKOdeslani; l++) {
+                                            MPI_Send(maticeSousednosti[l], pocetVrcholu, MPI_INT, source, MESSAGE_JOB_REQUIRE_ANSWER, MPI_COMM_WORLD);
+                                        }
+                     */
+
+                }
+                else{
+                    // odpovez ze nemam praci
+                    MPI_Send(0, 1, MPI_INT, source, MESSAGE_JOB_REQUIRE_ANSWER, MPI_COMM_WORLD);
                 }
 
                 source++;
+
             }
-
         }
-
     }
 }
 
