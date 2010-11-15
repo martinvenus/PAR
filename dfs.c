@@ -183,14 +183,29 @@ void askForJob() {
         }
     }
 
-    if (length > 0){
+    if (length > 0) {
         int pocetBarev = -1;
 
-        //Nejprve přijmeme počet barev
-        MPI_Recv(&pocetBarev, 1, MPI_INT, i, MESSAGE_JOB_REQUIRE_COLORS, MPI_COMM_WORLD, &status);
+        /*
+         * Inicializace paměti pro konfigurace
+         */
+        poleKonfiguraci = malloc(length * sizeof (Config));
+        Prvek* polePrvku;
+        polePrvku = malloc(pocetVrcholu * sizeof (Prvek));
 
-        //Poté přijmeme pole konfigurací
-        MPI_Recv(&struktura, length, MPI_INT, i, MESSAGE_JOB_REQUIRE_CONFIGURATION_ARRAY, MPI_COMM_WORLD, &status);
+        int j = 0;
+        for (j = 0; j < length; j++) {
+            //Nejprve přijmeme počet barev
+            MPI_Recv(&pocetBarev, 1, MPI_INT, i, MESSAGE_JOB_REQUIRE_COLORS, MPI_COMM_WORLD, &status);
+
+            int confirationItems = 0;
+
+            //Poté přijmeme délku pole konfigurací
+            MPI_Recv(&configurationItems, 1, MPI_INT, i, MESSAGE_JOB_REQUIRE_ITEMS, MPI_COMM_WORLD, &status);
+
+            //Poté přijmeme pole konfigurací
+            MPI_Recv(poleKonfiguraci, confirationItems, MPI_INT, i, MESSAGE_JOB_REQUIRE_CONFIGURATION_ARRAY, MPI_COMM_WORLD, &status);
+        }
     }
 }
 
