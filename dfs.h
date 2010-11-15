@@ -12,15 +12,12 @@ typedef struct
 {
     int* array;
     int top;
-    int bottom;
     int size;
 } Stack;
 
 
 void push(Stack *S, int value);
 int pop(Stack *S);
-int popBottom(Stack *S);
-int countNodes(Stack *S);
 void init(Stack *S, int size);
 int full(Stack *S);
 int isEmpty(Stack *s);
