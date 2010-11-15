@@ -12,7 +12,6 @@
 #include "dfs.h"
 #include "mbg.h"
 
-#define HAVE_JOB 1
 #define NO_JOB 0
 
 extern int my_rank;
@@ -165,20 +164,20 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
  * Žádání o práci probíhá postupně od procesoru s nejnižším ID k nejvyššímu
  */
 void askForJob() {
-    int data = NO_JOB;
+    int length = NO_JOB;
 
     int i = 0;
     for (i = 0; i < processSum; i++) {
 
         MPI_Send(1, 1, MPI_INT, i, MESSAGE_JOB_REQUIRE, MPI_COMM_WORLD);
-        MPI_Recv(&data, 1, MPI_INT, i, MESSAGE_JOB_REQUIRE_ANSWER, MPI_COMM_WORLD, &status);
+        MPI_Recv(&length, 1, MPI_INT, i, MESSAGE_JOB_REQUIRE_ANSWER, MPI_COMM_WORLD, &status);
 
-        if (data == HAVE_JOB) {
+        if (length > 0) {
             break;
         }
     }
 
-    if (data == HAVE_JOB){
+    if (length > 0){
         //Přijmeme práci
     }
 }
