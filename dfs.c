@@ -166,61 +166,64 @@ void askForJob(int pocetVrcholu, Stack* s) {
         if (i != my_rank) {
 
             MPI_Send(&nothing, 1, MPI_INT, i, MESSAGE_JOB_REQUIRE, MPI_COMM_WORLD);
-            printf("Pozadal jsem o praci (Kdo: %d -> Koho: %d)\n", my_rank, i);
-answerJobRequests(s);
-            int flag = 0;
-            int citac = 0;
+            //printf("Pozadal jsem o praci (Kdo: %d -> Koho: %d)\n", my_rank, i);
 
-            //while ((flag == 0) && (citac < 1000)) {
-              //  MPI_Iprobe(i, MESSAGE_JOB_REQUIRE_ANSWER, MPI_COMM_WORLD, &flag, &status);
-                //printf("Testovani pozadavku na praci. Flag: %d, procesor: %d\n", flag, source);
-                //if (flag) {
+            int flag = 0;
+            while (flag == 0) {
+
+                MPI_Iprobe(i, MESSAGE_JOB_REQUIRE_ANSWER, MPI_COMM_WORLD, &flag, &status);
+
+                if (flag) {
                     MPI_Recv(&lenght, 1, MPI_INT, i, MESSAGE_JOB_REQUIRE_ANSWER, MPI_COMM_WORLD, &status);
-                    printf("Dostal jsem odpoved o praci (Jakou: %d, Kdo: %d -> Od koho: %d)\n", lenght, my_rank, i);
-                //}
-                //citac++;
-            //}
+                    //printf("Dostal jsem odpoved o praci (Jakou: %d, Kdo: %d -> Od koho: %d)\n", lenght, my_rank, i);
+                }
+
+                /*
+                 * Procesor musí odpovědět na požadavky na práci ostatních procesorů
+                 * aby nedošlo k deadlocku
+                 */
+                answerJobRequests(s);
+            }
 
             if (lenght > 0) {
-                //break;
+                break;
             }
         }
     }
 
-    if (lenght > 0) {
-        //int pocetKonfiguraci = -1;
+    /*
+        if (lenght > 0) {
+            //int pocetKonfiguraci = -1;
 
-        /*
-         * Inicializace paměti pro konfigurace
-         */
-        /*
-                Config* poleKonfiguraci;
 
-                poleKonfiguraci = malloc(lenght * sizeof (Config));
-                Prvek* polePrvku;
-                polePrvku = malloc(pocetVrcholu * sizeof (Prvek));
+    //Inicializace paměti pro konfigurace
 
-                //MPI_Recv(&pocetKonfiguraci, 1, MPI_INT, i, MESSAGE_JOB_REQUIRE_ANSWER, MPI_COMM_WORLD, &status);
+                    Config* poleKonfiguraci;
 
-                printf("Pocet konfiguraci: %d\n", pocetKonfiguraci);
-         */
+                    poleKonfiguraci = malloc(lenght * sizeof (Config));
+                    Prvek* polePrvku;
+                    polePrvku = malloc(pocetVrcholu * sizeof (Prvek));
 
-        /*
-                int j = 0;
-                for (j = 0; j < length; j++) {
-                    //Nejprve přijmeme počet barev
-                    MPI_Recv(&pocetBarev, 1, MPI_INT, i, MESSAGE_JOB_REQUIRE_COLORS, MPI_COMM_WORLD, &status);
+                    //MPI_Recv(&pocetKonfiguraci, 1, MPI_INT, i, MESSAGE_JOB_REQUIRE_ANSWER, MPI_COMM_WORLD, &status);
 
-                    int confirationItems = 0;
+                    printf("Pocet konfiguraci: %d\n", pocetKonfiguraci);
 
-                    //Poté přijmeme délku pole konfigurací
-                    MPI_Recv(&configurationItems, 1, MPI_INT, i, MESSAGE_JOB_REQUIRE_ITEMS, MPI_COMM_WORLD, &status);
+                    int j = 0;
+                    for (j = 0; j < length; j++) {
+                        //Nejprve přijmeme počet barev
+                        MPI_Recv(&pocetBarev, 1, MPI_INT, i, MESSAGE_JOB_REQUIRE_COLORS, MPI_COMM_WORLD, &status);
 
-                    //Poté přijmeme pole konfigurací
-                    MPI_Recv(poleKonfiguraci, confirationItems, MPI_INT, i, MESSAGE_JOB_REQUIRE_CONFIGURATION_ARRAY, MPI_COMM_WORLD, &status);
-                }
-         */
-    }
+                        int confirationItems = 0;
+
+                        //Poté přijmeme délku pole konfigurací
+                        MPI_Recv(&configurationItems, 1, MPI_INT, i, MESSAGE_JOB_REQUIRE_ITEMS, MPI_COMM_WORLD, &status);
+
+                        //Poté přijmeme pole konfigurací
+                        MPI_Recv(poleKonfiguraci, confirationItems, MPI_INT, i, MESSAGE_JOB_REQUIRE_CONFIGURATION_ARRAY, MPI_COMM_WORLD, &status);
+                    }
+
+        }
+     */
 }
 
 /*
@@ -245,23 +248,19 @@ void answerJobRequests(Stack* s) {
                 //printf("Pred prijetim pozadavek na praci\n");
                 /* receiving message by blocking receive */
                 MPI_Recv(&message, 1, MPI_INT, source, MESSAGE_JOB_REQUIRE, MPI_COMM_WORLD, &status);
-                printf("Prijal jsem pozadavek na praci (Kdo: %d -> Od koho: %d)\n", my_rank, source);
+                //printf("Prijal jsem pozadavek na praci (Kdo: %d -> Od koho: %d)\n", my_rank, source);
 
                 //printf("Je zasobnik prazdny: %d\n", isEmpty(s));
                 // pokud mame predpocitano vice nez jedno reseni a jeste mame co pocitat
                 if ((pocetKonfiguraci > 1) && (!isEmpty(s))) {
-                    int konfiguraceKOdeslani = 5;
-                    MPI_Send(&konfiguraceKOdeslani, 1, MPI_INT, source, MESSAGE_JOB_REQUIRE_ANSWER, MPI_COMM_WORLD);
-
-                    printf("Odpovedel jsem ze posilam praci (Kdo: %d -> Komu: %d, Kolik: %d)\n", my_rank, source, konfiguraceKOdeslani);
-
-                    /*
                     int konfiguraceKOdeslani = (pocetKonfiguraci / 2);
                     int novyPocetKonfiguraci = pocetKonfiguraci - (pocetKonfiguraci / 2);
 
                     printf("Odesilam pocet konfiguraci: %d\n", konfiguraceKOdeslani);
+
                     MPI_Send(&konfiguraceKOdeslani, 1, MPI_INT, source, MESSAGE_JOB_REQUIRE_ANSWER, MPI_COMM_WORLD);
 
+                    /*
                     int l = 1;
                     for (l = 1; l <= konfiguraceKOdeslani; l++) {
                         int odesilanaKonfigurace;
