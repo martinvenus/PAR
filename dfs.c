@@ -102,6 +102,8 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
     int sousede = 0;
     int aktualniVrchol;
 
+
+
     // Procesor 0 zacne pracovat, ostatni cekaji
     if (my_rank == 0) {
         aktualniVrchol = 0;
@@ -109,6 +111,7 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
         push(s, aktualniVrchol); // vložím aktuílní vrchol do zásobníku
         //printf("Vrchol %i vlozen do zasobniku\n", aktualniVrchol);
     } else {
+
         while (isEmpty(s)) {
             // Požádáme ostatní procesory o práci
             askForJob();
@@ -117,11 +120,14 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
             // musi cekat na odpoved a teprve kdyz nedostal praci tak se bude ptat dal
 
         }
+
     }
 
     // BEGIN: TESTUJI JEDEN SLOUPEC
 
     while (1) {
+
+        answerJobRequests();
 
         //printf("Pocet prvku v zasobniku: %i\n", countNodes(s));
 
@@ -181,4 +187,43 @@ void askForJob() {
         //Přijmeme práci
     }
 }
+
+/*
+ * Odpovíme na případný požadavek na práci
+ */
+void answerJobRequests() {
+
+    int source;
+    int flag;
+    int message;
+
+    for (source = 0; source < processSum;) {
+
+        if (source != my_rank) {
+            /* checking if message has arrived */
+            MPI_Iprobe(MPI_ANY_SOURCE, MESSAGE_JOB_REQUIRE, MPI_COMM_WORLD, &flag, &status);
+            if (flag) {
+                /* receiving message by blocking receive */
+                MPI_Recv(&message, LENGTH, MPI_CHAR, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+
+                // pokud mame predpocitano vice nez jedno reseni a jeste mame co pocitat
+                if ((getPocetKonfiguraci() > 1) && (!isEmpty(s))) {
+
+                    int l = 0;
+                    for (l = 0; l < (pocetKonfiguraci / 2); l++) {
+                        MPI_Send(maticeSousednosti[l], pocetVrcholu, MPI_INT, k, MESSAGE_MATRIX, MPI_COMM_WORLD);
+                    }
+
+                    pocetKonfiguraci = pocetKonfiguraci - (pocetKonfiguraci / 2);
+
+                }
+
+                source++;
+            }
+
+        }
+
+    }
+}
+
 

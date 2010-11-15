@@ -257,3 +257,7 @@ void printBestSolution(int pocetVrcholu) {
         printf("\n");
     }
 }
+
+int getPocetKonfiguraci(){
+    return pocetKonfiguraci;
+}

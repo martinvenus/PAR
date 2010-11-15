@@ -27,6 +27,7 @@ void addVrchol(int konfigurace, int vrchol, int barva, int pocetVrcholu);
 void findBestColouring();
 void setBestSolutionToMatrix(int pocetVrcholu);
 void printBestSolution(int pocetVrcholu);
+int getPocetKonfiguraci();
 
 #endif	/* MBG_H */
 
