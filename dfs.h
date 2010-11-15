@@ -25,7 +25,7 @@ void stackPrint(Stack *S);
 void memoryFreeStack(Stack *s);
 void DFS_analyse(Stack *s, int** m, int vrcholy);
 void answerJobRequests(Stack* s);
-void askForJob(int pocetVrcholu);
+void askForJob(int pocetVrcholu, Stack* s);
 
 
 

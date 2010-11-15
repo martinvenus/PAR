@@ -99,7 +99,7 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
 
         while (isEmpty(s)) {
             // Požádáme ostatní procesory o práci
-            askForJob(pocetVrcholu);
+            askForJob(pocetVrcholu, s);
 
             // postupne posli zadost o praci vsem procesorum
             // musi cekat na odpoved a teprve kdyz nedostal praci tak se bude ptat dal
@@ -156,7 +156,7 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
  * Požádáme ostatní procesory o práci a čekáme na jejich odpověď
  * Žádání o práci probíhá postupně od procesoru s nejnižším ID k nejvyššímu
  */
-void askForJob(int pocetVrcholu) {
+void askForJob(int pocetVrcholu, Stack* s) {
 
     int lenght;
     int nothing = 1;
@@ -165,10 +165,21 @@ void askForJob(int pocetVrcholu) {
     for (i = 0; i < processSum; i++) {
         if (i != my_rank) {
 
-            printf("Pozadal jsem o praci (Kdo: %d -> Koho: %d)\n", my_rank, i);
             MPI_Send(&nothing, 1, MPI_INT, i, MESSAGE_JOB_REQUIRE, MPI_COMM_WORLD);
-            MPI_Recv(&lenght, 1, MPI_INT, i, MESSAGE_JOB_REQUIRE_ANSWER, MPI_COMM_WORLD, &status);
-            printf("Dostal jsem odpoved o praci (Jakou: %d, Kdo: %d -> Od koho: %d)\n", lenght, my_rank, i);
+            printf("Pozadal jsem o praci (Kdo: %d -> Koho: %d)\n", my_rank, i);
+answerJobRequests(s);
+            int flag = 0;
+            int citac = 0;
+
+            //while ((flag == 0) && (citac < 1000)) {
+              //  MPI_Iprobe(i, MESSAGE_JOB_REQUIRE_ANSWER, MPI_COMM_WORLD, &flag, &status);
+                //printf("Testovani pozadavku na praci. Flag: %d, procesor: %d\n", flag, source);
+                //if (flag) {
+                    MPI_Recv(&lenght, 1, MPI_INT, i, MESSAGE_JOB_REQUIRE_ANSWER, MPI_COMM_WORLD, &status);
+                    printf("Dostal jsem odpoved o praci (Jakou: %d, Kdo: %d -> Od koho: %d)\n", lenght, my_rank, i);
+                //}
+                //citac++;
+            //}
 
             if (lenght > 0) {
                 //break;
@@ -242,7 +253,7 @@ void answerJobRequests(Stack* s) {
                     int konfiguraceKOdeslani = 5;
                     MPI_Send(&konfiguraceKOdeslani, 1, MPI_INT, source, MESSAGE_JOB_REQUIRE_ANSWER, MPI_COMM_WORLD);
 
-                    printf("Odpovedel jsem ze posilam praci (Kdo: %d -> Komu: %d, Kolik: %d)\n", my_rank, source,konfiguraceKOdeslani);
+                    printf("Odpovedel jsem ze posilam praci (Kdo: %d -> Komu: %d, Kolik: %d)\n", my_rank, source, konfiguraceKOdeslani);
 
                     /*
                     int konfiguraceKOdeslani = (pocetKonfiguraci / 2);
@@ -285,12 +296,10 @@ void answerJobRequests(Stack* s) {
 
                 } else {
                     // odpovez ze nemam praci
-                    
+
                     //TODO: Upravit nothing
-                    /*
-                                        int nothing = NO_JOB;
-                                        MPI_Send(&nothing, 1, MPI_INT, source, MESSAGE_JOB_REQUIRE_ANSWER, MPI_COMM_WORLD);
-                     */
+                    int nothing = NO_JOB;
+                    MPI_Send(&nothing, 1, MPI_INT, source, MESSAGE_JOB_REQUIRE_ANSWER, MPI_COMM_WORLD);
                     int konfiguraceKOdeslani = 0;
                     MPI_Send(&konfiguraceKOdeslani, 1, MPI_INT, source, MESSAGE_JOB_REQUIRE_ANSWER, MPI_COMM_WORLD);
 
