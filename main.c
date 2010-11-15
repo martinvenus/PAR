@@ -6,6 +6,7 @@
  */
 
 #include "mpi.h"
+#include "main.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -19,6 +20,8 @@ int my_rank;
 int root = 0;
 int processSum = 0;
 
+MPI_Status status;
+
 /*
  * Globální proměnné pro práci s grafem
  */
@@ -30,20 +33,10 @@ int** maticeSousednosti;
 #define INIT_STACK_SIZE 50
 
 /*
- * Definice jednotlivých tagů při posílání zpráv
- */
-#define MESSAGE_MATRIX 0
-
-/*
  * @param argc počet argumentů zadaných při spuštění programu
  * @param argv argumenty předané při spuštění programu
  */
 int main(int argc, char** argv) {
-
-    /*
-     * Inicializace a nastavení knihovny MPI
-     */
-    MPI_Status status;
 
     /* start up MPI */
     MPI_Init(&argc, &argv);

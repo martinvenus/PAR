@@ -5,13 +5,19 @@
  * Created on 11. říjen 2010, 14:53
  */
 
+#include "mpi.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "main.h"
 #include "dfs.h"
 #include "mbg.h"
 
+#define HAVE_JOB 1
+#define NO_JOB 0
+
 extern int my_rank;
 extern int processSum;
+extern MPI_Status status;
 
 void push(Stack *s, int value) {
     if (full(s)) {
@@ -108,9 +114,12 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
     } else {
 
         while (isEmpty(s)) {
-            // TODO: zadat o praci
+            // Požádáme ostatní procesory o práci
+            askForJob();
+
             // postupne posli zadost o praci vsem procesorum
             // musi cekat na odpoved a teprve kdyz nedostal praci tak se bude ptat dal
+
         }
 
     }
@@ -119,37 +128,7 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
 
     while (1) {
 
-        int source;
-        int flag;
-        int message;
-
-        for (source = 0; source < processSum;) {
-
-            if (source != my_rank) {
-                /* checking if message has arrived */
-                MPI_Iprobe(MPI_ANY_SOURCE, MESSAGE_JOB_REQUIRE, MPI_COMM_WORLD, &flag, &status);
-                if (flag) {
-                    /* receiving message by blocking receive */
-                    MPI_Recv(&message, LENGTH, MPI_CHAR, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-
-                    // pokud mame predpocitano vice nez jedno reseni a jeste mame co pocitat
-                    if ((getPocetKonfiguraci() > 1) && (!isEmpty(s))) {
-
-                        int l = 0;
-                        for (l = 0; l < (pocetKonfiguraci/2); l++) {
-                            MPI_Send(maticeSousednosti[l], pocetVrcholu, MPI_INT, k, MESSAGE_MATRIX, MPI_COMM_WORLD);
-                        }
-
-                        pocetKonfiguraci = pocetKonfiguraci - (pocetKonfiguraci / 2);
-
-                    }
-
-                    source++;
-                }
-
-            }
-
-        }
+        answerJobRequests();
 
         //printf("Pocet prvku v zasobniku: %i\n", countNodes(s));
 
@@ -185,6 +164,67 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
     }
 
     // TODO: Odeslat nejlepsi nalezene reseni
-
-
 }
+
+/*
+ * Požádáme ostatní procesory o práci a čekáme na jejich odpověď
+ * Žádání o práci probíhá postupně od procesoru s nejnižším ID k nejvyššímu
+ */
+void askForJob() {
+    int data = NO_JOB;
+
+    int i = 0;
+    for (i = 0; i < processSum; i++) {
+
+        MPI_Send(1, 1, MPI_INT, i, MESSAGE_JOB_REQUIRE, MPI_COMM_WORLD);
+        MPI_Recv(&data, 1, MPI_INT, i, MESSAGE_JOB_REQUIRE_ANSWER, MPI_COMM_WORLD, &status);
+
+        if (data == HAVE_JOB) {
+            break;
+        }
+    }
+
+    if (data == HAVE_JOB) {
+        //Přijmeme práci
+    }
+}
+
+/*
+ * Odpovíme na případný požadavek na práci
+ */
+void answerJobRequests() {
+
+    int source;
+    int flag;
+    int message;
+
+    for (source = 0; source < processSum;) {
+
+        if (source != my_rank) {
+            /* checking if message has arrived */
+            MPI_Iprobe(MPI_ANY_SOURCE, MESSAGE_JOB_REQUIRE, MPI_COMM_WORLD, &flag, &status);
+            if (flag) {
+                /* receiving message by blocking receive */
+                MPI_Recv(&message, LENGTH, MPI_CHAR, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+
+                // pokud mame predpocitano vice nez jedno reseni a jeste mame co pocitat
+                if ((getPocetKonfiguraci() > 1) && (!isEmpty(s))) {
+
+                    int l = 0;
+                    for (l = 0; l < (pocetKonfiguraci / 2); l++) {
+                        MPI_Send(maticeSousednosti[l], pocetVrcholu, MPI_INT, k, MESSAGE_MATRIX, MPI_COMM_WORLD);
+                    }
+
+                    pocetKonfiguraci = pocetKonfiguraci - (pocetKonfiguraci / 2);
+
+                }
+
+                source++;
+            }
+
+        }
+
+    }
+}
+
+
