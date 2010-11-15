@@ -184,7 +184,13 @@ void askForJob() {
     }
 
     if (length > 0){
-        //Přijmeme práci
+        int pocetBarev = -1;
+
+        //Nejprve přijmeme počet barev
+        MPI_Recv(&pocetBarev, 1, MPI_INT, i, MESSAGE_JOB_REQUIRE_COLORS, MPI_COMM_WORLD, &status);
+
+        //Poté přijmeme pole konfigurací
+        MPI_Recv(&struktura, length, MPI_INT, i, MESSAGE_JOB_REQUIRE_CONFIGURATION_ARRAY, MPI_COMM_WORLD, &status);
     }
 }
 
