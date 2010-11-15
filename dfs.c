@@ -11,6 +11,7 @@
 #include "mbg.h"
 
 extern int my_rank;
+extern int processSum;
 
 void push(Stack *s, int value) {
     if (full(s)) {
@@ -96,24 +97,59 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
     int sousede = 0;
     int aktualniVrchol;
 
+
+
     // Procesor 0 zacne pracovat, ostatni cekaji
     if (my_rank == 0) {
         aktualniVrchol = 0;
         m[aktualniVrchol][aktualniVrchol] = 2;
         push(s, aktualniVrchol); // vložím aktuílní vrchol do zásobníku
         //printf("Vrchol %i vlozen do zasobniku\n", aktualniVrchol);
-    }
-    else{
-        while(isEmpty(s)){
+    } else {
+
+        while (isEmpty(s)) {
             // TODO: zadat o praci
             // postupne posli zadost o praci vsem procesorum
             // musi cekat na odpoved a teprve kdyz nedostal praci tak se bude ptat dal
         }
+
     }
 
     // BEGIN: TESTUJI JEDEN SLOUPEC
 
     while (1) {
+
+        int source;
+        int flag;
+        int message;
+
+        for (source = 0; source < processSum;) {
+
+            if (source != my_rank) {
+                /* checking if message has arrived */
+                MPI_Iprobe(MPI_ANY_SOURCE, MESSAGE_JOB_REQUIRE, MPI_COMM_WORLD, &flag, &status);
+                if (flag) {
+                    /* receiving message by blocking receive */
+                    MPI_Recv(&message, LENGTH, MPI_CHAR, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+
+                    // pokud mame predpocitano vice nez jedno reseni a jeste mame co pocitat
+                    if ((getPocetKonfiguraci() > 1) && (!isEmpty(s))) {
+
+                        int l = 0;
+                        for (l = 0; l < (pocetKonfiguraci/2); l++) {
+                            MPI_Send(maticeSousednosti[l], pocetVrcholu, MPI_INT, k, MESSAGE_MATRIX, MPI_COMM_WORLD);
+                        }
+
+                        pocetKonfiguraci = pocetKonfiguraci - (pocetKonfiguraci / 2);
+
+                    }
+
+                    source++;
+                }
+
+            }
+
+        }
 
         //printf("Pocet prvku v zasobniku: %i\n", countNodes(s));
 
@@ -137,18 +173,18 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
         }
 
         // Pokud mam prazdny zasobnik - vytvoril jsem kompletni konfiguraci
-        if (isEmpty(s)){
+        if (isEmpty(s)) {
 
             break;
-           // TODO: Ulozit nejlepsi reseni
-           // TODO: Otestovat zda nebyl ukoncen algoritmus (globalni promenna?)
-           //       Pokud Ano, pak breaknout, pokud ne pak dalsi ToDo
-           // TODO: Poslat pozadavek na praci nahodnemu procesoru + zvysovat citac
+            // TODO: Ulozit nejlepsi reseni
+            // TODO: Otestovat zda nebyl ukoncen algoritmus (globalni promenna?)
+            //       Pokud Ano, pak breaknout, pokud ne pak dalsi ToDo
+            // TODO: Poslat pozadavek na praci nahodnemu procesoru + zvysovat citac
         }
 
     }
 
     // TODO: Odeslat nejlepsi nalezene reseni
 
-    
+
 }
