@@ -258,6 +258,28 @@ void printBestSolution(int pocetVrcholu) {
     }
 }
 
-int getPocetKonfiguraci(){
+int getPocetKonfiguraci() {
     return pocetKonfiguraci;
+}
+
+void setPocetKonfiguraci(int pocet) {
+
+    int i;
+    for (i = pocet+1; i < pocetKonfiguraci; i++) {
+        free(poleKonfiguraci[i].array);
+    }
+    pocetKonfiguraci = pocet;
+
+}
+
+int getPocetBarev(int konfigurace) {
+    return poleKonfiguraci[konfigurace].pocetBarev;
+}
+
+int getPocetPrvku() {
+    return pocetPrvku;
+}
+
+Prvek* getKonfigurace(int konfigurace) {
+    return poleKonfiguraci[konfigurace].array;
 }

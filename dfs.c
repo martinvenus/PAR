@@ -35,31 +35,16 @@ void push(Stack *s, int value) {
 }
 
 int pop(Stack *s) {
-    if (s->top > s->bottom) {
+    if (s->top > 0) {
         (s->top)--;
         return (s->array[s->top]);
     } else {
         return -1;
     }
-    /*  Equivalent to: return (S->v[--(S->top)]);  */
-}
-
-int popBottom(Stack *s) {
-    if (s->bottom < s->top) {
-        (s->bottom)++;
-        return (s->array[s->bottom]);
-    } else {
-        return -1;
-    }
-}
-
-int countNodes(Stack *s) {
-    return s->top - s->bottom;
 }
 
 void init(Stack *s, int size) {
     s->top = 0;
-    s->bottom = 0;
 
     s->array = malloc(size * sizeof (int));
 
@@ -76,16 +61,16 @@ int full(Stack *s) {
 }
 
 int isEmpty(Stack *s) {
-    return (s->top == s->bottom);
+    return (s->top == 0);
 }
 
 void stackPrint(Stack *s) {
     int i;
-    if (s->top == s->bottom)
+    if (s->top == 0)
         printf("\nStack is empty.\n");
     else {
         printf("\nStack contents: \n");
-        for (i = s->bottom; i < s->top; i++) {
+        for (i = 0; i < s->top; i++) {
             printf("ID: %i, ", s->array[i]);
         }
         printf("\n");
@@ -127,7 +112,7 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
 
     while (1) {
 
-        answerJobRequests();
+        answerJobRequests(s);
 
         //printf("Pocet prvku v zasobniku: %i\n", countNodes(s));
 
@@ -212,7 +197,7 @@ void askForJob() {
 /*
  * Odpovíme na případný požadavek na práci
  */
-void answerJobRequests() {
+void answerJobRequests(Stack* s) {
 
     int source;
     int flag;
@@ -224,26 +209,60 @@ void answerJobRequests() {
             /* checking if message has arrived */
             MPI_Iprobe(MPI_ANY_SOURCE, MESSAGE_JOB_REQUIRE, MPI_COMM_WORLD, &flag, &status);
             if (flag) {
+
+                int pocetKonfiguraci = getPocetKonfiguraci();
+
                 /* receiving message by blocking receive */
-                MPI_Recv(&message, LENGTH, MPI_CHAR, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+                MPI_Recv(&message, 1, MPI_CHAR, MPI_ANY_SOURCE, MESSAGE_JOB_REQUIRE, MPI_COMM_WORLD, &status);
 
                 // pokud mame predpocitano vice nez jedno reseni a jeste mame co pocitat
-                if ((getPocetKonfiguraci() > 1) && (!isEmpty(s))) {
+                if ((pocetKonfiguraci > 1) && (!isEmpty(s))) {
 
-                    int l = 0;
-                    for (l = 0; l < (pocetKonfiguraci / 2); l++) {
-                        MPI_Send(maticeSousednosti[l], pocetVrcholu, MPI_INT, k, MESSAGE_MATRIX, MPI_COMM_WORLD);
+                    int konfiguraceKOdeslani = (pocetKonfiguraci / 2);
+                    int novyPocetKonfiguraci = pocetKonfiguraci - (pocetKonfiguraci / 2);
+
+                    MPI_Send(&konfiguraceKOdeslani, 1, MPI_INT, source, MESSAGE_JOB_REQUIRE_ANSWER, MPI_COMM_WORLD);
+
+                    int l = 1;
+                    for (l = 1; l <= konfiguraceKOdeslani; l++) {
+                        int odesilanaKonfigurace;
+                        int pocetBarev;
+                        int sizeOfPocetPrvku;
+                        Prvek* array;
+
+                        int zasobnikTop;
+                        int zasobnikSize;
+                        int* zasobnikArray;
+
+                        zasobnikTop = s->top;
+                        zasobnikSize = s->size;
+                        zasobnikArray = s->array;
+
+                        odesilanaKonfigurace = novyPocetKonfiguraci + l;
+                        pocetBarev = getPocetBarev(odesilanaKonfigurace);
+                        array = getKonfigurace(odesilanaKonfigurace);
+                        sizeOfPocetPrvku = getPocetPrvku() * sizeof (Prvek);
+                        MPI_Send(&pocetBarev, 1, MPI_INT, source, MESSAGE_JOB_REQUIRE_COLORS, MPI_COMM_WORLD);
+                        MPI_Send(&sizeOfPocetPrvku, 1, MPI_INT, source, MESSAGE_JOB_REQUIRE_ITEMS, MPI_COMM_WORLD);
+                        MPI_Send(array, sizeOfPocetPrvku, MPI_BYTE, source, MESSAGE_JOB_REQUIRE_CONFIGURATION_ARRAY, MPI_COMM_WORLD);
+
+                        MPI_Send(&zasobnikSize, 1, MPI_INT, source, MESSAGE_JOB_REQUIRE_STACK_SIZE, MPI_COMM_WORLD);
+                        MPI_Send(&zasobnikTop, 1, MPI_INT, source, MESSAGE_JOB_REQUIRE_STACK_TOP, MPI_COMM_WORLD);
+                        MPI_Send(zasobnikArray, zasobnikSize, MPI_INT, source, MESSAGE_JOB_REQUIRE_STACK_ARRAY, MPI_COMM_WORLD);
+
                     }
 
-                    pocetKonfiguraci = pocetKonfiguraci - (pocetKonfiguraci / 2);
+                    setPocetKonfiguraci(novyPocetKonfiguraci);
 
+                } else {
+                    // odpovez ze nemam praci
+                    MPI_Send(NO_JOB, 1, MPI_INT, source, MESSAGE_JOB_REQUIRE_ANSWER, MPI_COMM_WORLD);
                 }
 
                 source++;
+
             }
-
         }
-
     }
 }
 

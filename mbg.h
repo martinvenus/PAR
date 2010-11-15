@@ -28,6 +28,10 @@ void findBestColouring();
 void setBestSolutionToMatrix(int pocetVrcholu);
 void printBestSolution(int pocetVrcholu);
 int getPocetKonfiguraci();
+void setPocetKonfiguraci(int pocet);
+int getPocetBarev(int konfigurace);
+int getPocetPrvku();
+Prvek* getKonfigurace(int konfigurace);
 
 #endif	/* MBG_H */
 
