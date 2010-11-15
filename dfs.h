@@ -28,6 +28,8 @@ void stackPrint(Stack *S);
 void memoryFreeStack(Stack *s);
 void DFS_analyse(Stack *s, int** m, int vrcholy);
 
+void askForJob();
+
 
 
 #endif	/* DFS_H */

@@ -5,12 +5,19 @@
  * Created on 11. říjen 2010, 14:53
  */
 
+#include "mpi.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "main.h"
 #include "dfs.h"
 #include "mbg.h"
 
+#define HAVE_JOB 1
+#define NO_JOB 0
+
 extern int my_rank;
+extern int processSum;
+extern MPI_Status status;
 
 void push(Stack *s, int value) {
     if (full(s)) {
@@ -102,12 +109,14 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
         m[aktualniVrchol][aktualniVrchol] = 2;
         push(s, aktualniVrchol); // vložím aktuílní vrchol do zásobníku
         //printf("Vrchol %i vlozen do zasobniku\n", aktualniVrchol);
-    }
-    else{
-        while(isEmpty(s)){
-            // TODO: zadat o praci
+    } else {
+        while (isEmpty(s)) {
+            // Požádáme ostatní procesory o práci
+            askForJob();
+
             // postupne posli zadost o praci vsem procesorum
             // musi cekat na odpoved a teprve kdyz nedostal praci tak se bude ptat dal
+
         }
     }
 
@@ -137,18 +146,40 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
         }
 
         // Pokud mam prazdny zasobnik - vytvoril jsem kompletni konfiguraci
-        if (isEmpty(s)){
+        if (isEmpty(s)) {
 
             break;
-           // TODO: Ulozit nejlepsi reseni
-           // TODO: Otestovat zda nebyl ukoncen algoritmus (globalni promenna?)
-           //       Pokud Ano, pak breaknout, pokud ne pak dalsi ToDo
-           // TODO: Poslat pozadavek na praci nahodnemu procesoru + zvysovat citac
+            // TODO: Ulozit nejlepsi reseni
+            // TODO: Otestovat zda nebyl ukoncen algoritmus (globalni promenna?)
+            //       Pokud Ano, pak breaknout, pokud ne pak dalsi ToDo
+            // TODO: Poslat pozadavek na praci nahodnemu procesoru + zvysovat citac
         }
 
     }
 
     // TODO: Odeslat nejlepsi nalezene reseni
-
-    
 }
+
+/*
+ * Požádáme ostatní procesory o práci a čekáme na jejich odpověď
+ * Žádání o práci probíhá postupně od procesoru s nejnižším ID k nejvyššímu
+ */
+void askForJob() {
+    int data = NO_JOB;
+
+    int i = 0;
+    for (i = 0; i < processSum; i++) {
+
+        MPI_Send(1, 1, MPI_INT, i, MESSAGE_JOB_REQUIRE, MPI_COMM_WORLD);
+        MPI_Recv(&data, 1, MPI_INT, i, MESSAGE_JOB_REQUIRE_ANSWER, MPI_COMM_WORLD, &status);
+
+        if (data == HAVE_JOB) {
+            break;
+        }
+    }
+
+    if (data == HAVE_JOB){
+        //Přijmeme práci
+    }
+}
+
