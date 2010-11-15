@@ -10,6 +10,8 @@
 #include "dfs.h"
 #include "mbg.h"
 
+extern int my_rank;
+
 void push(Stack *s, int value) {
     if (full(s)) {
         int novaVelikost = 2 * s->size;
@@ -92,46 +94,31 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
 
     int x = 0;
     int sousede = 0;
-
-    //printf("Vrcholy: %i\n", vrcholy);
-
     int aktualniVrchol;
-    aktualniVrchol = 0;
-    m[aktualniVrchol][aktualniVrchol] = 2;
-    push(s, aktualniVrchol); // vložím aktuílní vrchol do zásobníku
-    //printf("Vrchol %i vlozen do zasobniku\n", aktualniVrchol);
+
+    // Procesor 0 zacne pracovat, ostatni cekaji
+    if (my_rank == 0) {
+        aktualniVrchol = 0;
+        m[aktualniVrchol][aktualniVrchol] = 2;
+        push(s, aktualniVrchol); // vložím aktuílní vrchol do zásobníku
+        //printf("Vrchol %i vlozen do zasobniku\n", aktualniVrchol);
+    }
+    else{
+        while(isEmpty(s)){
+            // TODO: zadat o praci
+            // postupne posli zadost o praci vsem procesorum
+            // musi cekat na odpoved a teprve kdyz nedostal praci tak se bude ptat dal
+        }
+    }
 
     // BEGIN: TESTUJI JEDEN SLOUPEC
 
-    while (!(isEmpty(s))) {
+    while (1) {
 
         //printf("Pocet prvku v zasobniku: %i\n", countNodes(s));
 
         aktualniVrchol = pop(s);
         //printf("Vrchol %i vybran ze zasobniku\n", aktualniVrchol);
-
-
-/*
-        // BEGIN IF SOMEONE NEEDS JOB
-
-        // pokud jsme pred chvili nevybrali posledni prvek, posleme prvky
-        // jinak posleme zpravu ze mame prazdny zasobnik
-        if (!(isEmpty(s))) {
-
-            int i = 0;
-            printf("--------------\n");
-            for (i = s->bottom; i <= (countNodes(s) / 2); i++) {
-                printf("ODEBERU: %i\n", popBottom(s));
-            }
-            printf("--------------\n");
-
-        }
-        else{
-            printf("Mam prazdny zasobnik.\n");
-        }
-
-        // END IF SOMEONE NEEDS JOB
-*/
 
         coloring(aktualniVrchol, pocetVrcholu);
 
@@ -142,25 +129,26 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
             if (m[x][aktualniVrchol] == 1) { // jestliže aktuální vrchol sousedí s vrcholem m[x][aktualniVrchol]
                 int v;
                 v = x;
-                m[x][x] = 2;
-                push(s, v); // vložím aktuílní vrchol do zásobníku
+                m[x][x] = 2; // nastavime vrcholu hodnotu 2 (=navstiven)
+                push(s, v); // vložím aktuální vrchol do zásobníku
                 //printf("Vrchol %i vlozen do zasobniku\n", x);
                 sousede++;
             }
         }
 
-        //printf("\nVrchol %i ma %i novych sousedu\n", aktualniVrchol.id, sousede);
+        // Pokud mam prazdny zasobnik - vytvoril jsem kompletni konfiguraci
+        if (isEmpty(s)){
 
-        if (sousede == 0) {
-            //printf("Nalezen vrchol %i.\n", aktualniVrchol.id);
+            break;
+           // TODO: Ulozit nejlepsi reseni
+           // TODO: Otestovat zda nebyl ukoncen algoritmus (globalni promenna?)
+           //       Pokud Ano, pak breaknout, pokud ne pak dalsi ToDo
+           // TODO: Poslat pozadavek na praci nahodnemu procesoru + zvysovat citac
         }
-
-        // END: TESTUJI JEDEN SLOUPEC
 
     }
 
-    //stackPrint(s);
+    // TODO: Odeslat nejlepsi nalezene reseni
 
-    //printf("\nDFS done\n");
-
+    
 }
