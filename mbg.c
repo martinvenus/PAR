@@ -11,6 +11,7 @@
 
 #define	NEW_COLOR -1
 
+//TODO: Upravit na dynamickou relokaci paměti
 int velikostPole = 10000;
 int pocetKonfiguraci = 0;
 int pocetPrvku = 0;
@@ -281,5 +282,6 @@ int getPocetPrvku() {
 }
 
 Prvek* getKonfigurace(int konfigurace) {
+    //printf("Vypis konfigurace: %d\n", poleKonfiguraci[konfigurace].array->barva);
     return poleKonfiguraci[konfigurace].array;
 }
