@@ -286,3 +286,7 @@ Prvek* getKonfigurace(int konfigurace) {
     //printf("Vypis konfigurace: %d, vrchol 0 ma barvu %d\n", konfigurace, poleKonfiguraci[konfigurace].array[0].barva);
     return poleKonfiguraci[konfigurace].array;
 }
+
+void setPoleKonfoguraci(Config* pole){
+    poleKonfiguraci = pole;
+}

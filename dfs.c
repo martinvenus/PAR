@@ -138,10 +138,12 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
         if (isEmpty(s)) {
 
 /*
+
             while (1) {
                 answerJobRequests(s);
             }
 */
+
             break;
             // TODO: Ulozit nejlepsi reseni
             // TODO: Otestovat zda nebyl ukoncen algoritmus (globalni promenna?)
@@ -213,15 +215,15 @@ void askForJob(int pocetVrcholu, Stack* s) {
 
             //Nejprve přijmeme počet barev
             MPI_Recv(&pocetBarev, 1, MPI_INT, i, MESSAGE_JOB_REQUIRE_COLORS, MPI_COMM_WORLD, &status);
-            printf("Počet barev: %i\n", pocetBarev);
+            //printf("Počet barev: %i\n", pocetBarev);
 
             //Přijmeme počet prvků v konfiguraci
             MPI_Recv(&pocetPrvku, 1, MPI_INT, i, MESSAGE_JOB_REQUIRE_ITEMS, MPI_COMM_WORLD, &status);
-            printf("Počet prvku: %i\n", pocetPrvku);
+            //printf("Počet prvku: %i\n", pocetPrvku);
 
             //Přijmeme pole konfigurací
             MPI_Recv(polePrvku, pocetPrvku * sizeof (Prvek), MPI_BYTE, i, MESSAGE_JOB_REQUIRE_CONFIGURATION_ARRAY, MPI_COMM_WORLD, &status);
-            printf("Přijmul jsem pole prvku: %d, %d\n", polePrvku[1].barva, polePrvku[1].vrchol);
+            //printf("Přijmul jsem pole prvku: %d, %d\n", polePrvku[1].barva, polePrvku[1].vrchol);
 
         }
 
@@ -315,7 +317,7 @@ void answerJobRequests(Stack* s) {
                     int konfiguraceKOdeslani = 0;
                     MPI_Send(&konfiguraceKOdeslani, 1, MPI_INT, source, MESSAGE_JOB_REQUIRE_ANSWER, MPI_COMM_WORLD);
 
-                    //printf("Odpovedel jsem ze namam praci k predani (Kdo: %d -> Komu: %d)\n", my_rank, source);
+                    printf("Odpovedel jsem ze namam praci k predani (Kdo: %d -> Komu: %d)\n", my_rank, source);
 
                 }
 
