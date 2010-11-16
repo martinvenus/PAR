@@ -16,6 +16,7 @@
 
 extern int my_rank;
 extern int processSum;
+int* diag;
 extern MPI_Status status;
 
 void push(Stack *s, int value) {
@@ -87,12 +88,16 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
     int sousede = 0;
     int aktualniVrchol;
 
-
+    diag = malloc(pocetVrcholu * sizeof (int));
+    int k = 0;
+    for (k = 0; k < pocetVrcholu; k++) {
+        diag[k] = 0;
+    }
 
     // Procesor 0 zacne pracovat, ostatni cekaji
     if (my_rank == 0) {
         aktualniVrchol = 0;
-        m[aktualniVrchol][aktualniVrchol] = 2;
+        diag[0] = 2;
         push(s, aktualniVrchol); // vložím aktuílní vrchol do zásobníku
         //printf("Vrchol %i vlozen do zasobniku\n", aktualniVrchol);
     } else {
@@ -111,23 +116,32 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
     // BEGIN: TESTUJI JEDEN SLOUPEC
 
     while (1) {
-        answerJobRequests(s);
+        answerJobRequests(s, pocetVrcholu);
 
         //printf("Pocet prvku v zasobniku: %i\n", countNodes(s));
 
+
+        printf("\nJsem procesor %d popuju z vrcholu coz je: %d\n", my_rank, s->top);
+        printf("\nA na topu mam: %d\n", s->array[s->top - 1]);
+        printf("\nPricemz velikost zasobniku je: %d\n", s->size);
+
         aktualniVrchol = pop(s);
+
+        printf("\nPop se povedl - popnul jsem: %d\n", aktualniVrchol);
         //printf("Vrchol %i vybran ze zasobniku\n", aktualniVrchol);
+
+        printf("\nPocet vrcholu: %d\n", pocetVrcholu);
 
         coloring(aktualniVrchol, pocetVrcholu);
 
         sousede = 0;
         for (x = 0; x < pocetVrcholu; x++) {
             if (x == aktualniVrchol) continue; // preskocim diagonalu
-            if (m[x][x] == 2) continue; // soused jiz byl objeven drive
+            if (diag[x] == 2) continue; // soused jiz byl objeven drive
             if (m[x][aktualniVrchol] == 1) { // jestliže aktuální vrchol sousedí s vrcholem m[x][aktualniVrchol]
                 int v;
                 v = x;
-                m[x][x] = 2; // nastavime vrcholu hodnotu 2 (=navstiven)
+                diag[x] = 2; // nastavime vrcholu hodnotu 2 (=navstiven)
                 push(s, v); // vložím aktuální vrchol do zásobníku
                 //printf("Vrchol %i vlozen do zasobniku\n", x);
                 sousede++;
@@ -138,9 +152,12 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
         if (isEmpty(s)) {
 
 
-            while (1) {
-                answerJobRequests(s);
-            }
+
+            /*
+                        while (1) {
+                            answerJobRequests(s, pocetVrcholu);
+                        }
+             */
 
             break;
             // TODO: Ulozit nejlepsi reseni
@@ -150,6 +167,8 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
         }
 
     }
+
+    free(diag);
 
     // TODO: Odeslat nejlepsi nalezene reseni
 }
@@ -184,7 +203,7 @@ void askForJob(int pocetVrcholu, Stack* s) {
                  * Procesor musí odpovědět na požadavky na práci ostatních procesorů
                  * aby nedošlo k deadlocku
                  */
-                answerJobRequests(s);
+                answerJobRequests(s, pocetVrcholu);
             }
 
             if (lenght > 0) {
@@ -262,9 +281,12 @@ void askForJob(int pocetVrcholu, Stack* s) {
         //printf("XXXXXXXXXZásobník: %d\n", stackArray[1]);
         memoryFreeStack(s); //uvolníme předchozí zásobník
         s->array = stackArray;
-        //printf("XXXXXXXXXPrvek (5) zásobníku: %d\n", s->array[0]);
+        printf("XXXXXXXXXPrvek zásobníku: %d\n", s->array[0]);
+        printf("XXXXXXXXXnastavil jsem stack array.\n");
         s->size = zasobnikSize;
-        s->top = vrcholZasobniku-1;
+        printf("XXXXXXXXXnastavil jsem velikost.\n");
+        s->top = vrcholZasobniku;
+        printf("XXXXXXXXXNastavil jsem vrchol.\n");
 
 
     }
@@ -273,7 +295,7 @@ void askForJob(int pocetVrcholu, Stack* s) {
 /*
  * Odpovíme na případný požadavek na práci
  */
-void answerJobRequests(Stack* s) {
+void answerJobRequests(Stack* s, int pocetVrcholu) {
 
     int source;
     int flag;
@@ -333,6 +355,8 @@ void answerJobRequests(Stack* s) {
                     MPI_Send(&zasobnikSize, 1, MPI_INT, source, MESSAGE_JOB_REQUIRE_STACK_SIZE, MPI_COMM_WORLD);
                     MPI_Send(&zasobnikTop, 1, MPI_INT, source, MESSAGE_JOB_REQUIRE_STACK_TOP, MPI_COMM_WORLD);
                     MPI_Send(zasobnikArray, zasobnikSize, MPI_INT, source, MESSAGE_JOB_REQUIRE_STACK_ARRAY, MPI_COMM_WORLD);
+
+                    MPI_Send(diag, pocetVrcholu, MPI_INT, source, MESSAGE_JOB_REQUIRE_DIAG, MPI_COMM_WORLD);
 
 
                     setPocetKonfiguraci(novyPocetKonfiguraci);

@@ -28,8 +28,11 @@ extern int** maticeSousednosti;
 void coloring(int idNovehoVrcholu, int pocetVrcholu) {
 
     //printf("Debug - Obarvuji vrchol %i\n", idNovehoVrcholu);
-
+    
+    
     if (pocetKonfiguraci == 0) {
+
+        //printf("\n\n\n\nNULA KONFIGURACI\n\n\n\n");
 
         poleKonfiguraci = malloc(velikostPole * sizeof (Config));
 
@@ -57,7 +60,7 @@ void coloring(int idNovehoVrcholu, int pocetVrcholu) {
 
     int i = 0;
     pridanoKonfiguraci = 0;
-    //printf("Debug - pocet konfiguraci: %i\n", pocetKonfiguraci);
+    printf("Debug - pocet konfiguraci: %i\n", pocetKonfiguraci);
 
     for (i = 0; i < pocetKonfiguraci; i++) {
 
