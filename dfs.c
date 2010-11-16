@@ -260,8 +260,8 @@ void answerJobRequests(Stack* s) {
 
                     MPI_Send(&konfiguraceKOdeslani, 1, MPI_INT, source, MESSAGE_JOB_REQUIRE_ANSWER, MPI_COMM_WORLD);
 
-                    int l = 1;
-                    for (l = 1; l <= konfiguraceKOdeslani; l++) {
+                    int l = 0;
+                    for (l = 0; l < konfiguraceKOdeslani; l++) {
                         int odesilanaKonfigurace;
                         int pocetBarev;
                         int sizeOfPocetPrvku;

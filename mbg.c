@@ -282,6 +282,7 @@ int getPocetPrvku() {
 }
 
 Prvek* getKonfigurace(int konfigurace) {
-    //printf("Vypis konfigurace: %d\n", poleKonfiguraci[konfigurace].array->barva);
+    //printf("\nPozadavek na konfiguraci: %d z celkoveho poctu: %d\n", konfigurace+1, pocetKonfiguraci);
+    printf("Vypis konfigurace: %d\n", poleKonfiguraci[konfigurace].array[0].barva);
     return poleKonfiguraci[konfigurace].array;
 }
