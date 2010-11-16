@@ -137,11 +137,9 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
         // Pokud mam prazdny zasobnik - vytvoril jsem kompletni konfiguraci
         if (isEmpty(s)) {
 
-/*
             while (1) {
                 answerJobRequests(s);
             }
-*/
             break;
             // TODO: Ulozit nejlepsi reseni
             // TODO: Otestovat zda nebyl ukoncen algoritmus (globalni promenna?)
@@ -219,10 +217,41 @@ void askForJob(int pocetVrcholu, Stack* s) {
             MPI_Recv(&pocetPrvku, 1, MPI_INT, i, MESSAGE_JOB_REQUIRE_ITEMS, MPI_COMM_WORLD, &status);
             printf("Počet prvku: %i\n", pocetPrvku);
 
-            //Přijmeme pole konfigurací
+            //Přijmeme pole prvků
             MPI_Recv(polePrvku, pocetPrvku * sizeof (Prvek), MPI_BYTE, i, MESSAGE_JOB_REQUIRE_CONFIGURATION_ARRAY, MPI_COMM_WORLD, &status);
             printf("Přijmul jsem pole prvku: %d, %d\n", polePrvku[1].barva, polePrvku[1].vrchol);
 
+            /*
+             * Nastavíme proměnné do konfigurací
+             */
+            poleKonfiguraci[j].array = polePrvku;
+            poleKonfiguraci[j].pocetBarev = pocetBarev;
+
+        }
+
+        /*
+         * Odešleme konfigurace
+         */
+        setPoleKonfiguraci(poleKonfiguraci);
+
+        int zasobnikSize = 0;
+
+        //Přijme počet vrcholů v zásobníku
+        MPI_Recv(&zasobnikSize, 1, MPI_INT, i, MESSAGE_JOB_REQUIRE_STACK_SIZE, MPI_COMM_WORLD, &status);
+        printf("XXXXXXXXXPočet prvků v zásobníku: %d\n", zasobnikSize);
+
+        int vrcholZasobniku = 0;
+
+        //Přijme vrchol zásobníku
+        MPI_Recv(&vrcholZasobniku, 1, MPI_INT, i, MESSAGE_JOB_REQUIRE_STACK_TOP, MPI_COMM_WORLD, &status);
+        printf("XXXXXXXXXVrchol zásobníku: %d\n", vrcholZasobniku);
+
+        int* stackArray = malloc(zasobnikSize * sizeof (int));
+
+        //Přijme vrchol zásobníku
+        MPI_Recv(stackArray, zasobnikSize, MPI_INT, i, MESSAGE_JOB_REQUIRE_STACK_ARRAY, MPI_COMM_WORLD, &status);
+        if (vrcholZasobniku > 0) {
+            printf("XXXXXXXXXPrvek (5) zásobníku: %d\n", stackArray[0]);
         }
 
     }
@@ -278,31 +307,20 @@ void answerJobRequests(Stack* s) {
                         MPI_Send(&sizeOfPocetPrvku, 1, MPI_INT, source, MESSAGE_JOB_REQUIRE_ITEMS, MPI_COMM_WORLD);
                         //printf("Jsem procesor %d a odesilam konfiguraci %d prosesoru %d.\n", my_rank, odesilanaKonfigurace, source);
                         MPI_Send(array, (sizeOfPocetPrvku * sizeof (Prvek)), MPI_BYTE, source, MESSAGE_JOB_REQUIRE_CONFIGURATION_ARRAY, MPI_COMM_WORLD);
-
-/*
-                        Prvek* test;
-                        test = malloc(sizeof(Prvek));
-                        test[0].barva = 0;
-                        test[0].vrchol = 5;
-
-                        MPI_Send(test, (sizeof (Prvek)), MPI_BYTE, source, MESSAGE_JOB_REQUIRE_CONFIGURATION_ARRAY, MPI_COMM_WORLD);
-*/
-
                     }
 
-                    /*
-                                        int zasobnikTop;
-                                        int zasobnikSize;
-                                        int* zasobnikArray;
+                    int zasobnikTop;
+                    int zasobnikSize;
+                    int* zasobnikArray;
 
-                                        zasobnikTop = s->top;
-                                        zasobnikSize = s->size;
-                                        zasobnikArray = s->array;
+                    zasobnikTop = s->top;
+                    zasobnikSize = s->size;
+                    zasobnikArray = s->array;
 
-                                        MPI_Send(&zasobnikSize, 1, MPI_INT, source, MESSAGE_JOB_REQUIRE_STACK_SIZE, MPI_COMM_WORLD);
-                                        MPI_Send(&zasobnikTop, 1, MPI_INT, source, MESSAGE_JOB_REQUIRE_STACK_TOP, MPI_COMM_WORLD);
-                                        MPI_Send(zasobnikArray, zasobnikSize, MPI_INT, source, MESSAGE_JOB_REQUIRE_STACK_ARRAY, MPI_COMM_WORLD);
-                     */
+                    MPI_Send(&zasobnikSize, 1, MPI_INT, source, MESSAGE_JOB_REQUIRE_STACK_SIZE, MPI_COMM_WORLD);
+                    MPI_Send(&zasobnikTop, 1, MPI_INT, source, MESSAGE_JOB_REQUIRE_STACK_TOP, MPI_COMM_WORLD);
+                    MPI_Send(zasobnikArray, zasobnikSize, MPI_INT, source, MESSAGE_JOB_REQUIRE_STACK_ARRAY, MPI_COMM_WORLD);
+
 
                     setPocetKonfiguraci(novyPocetKonfiguraci);
 
@@ -315,7 +333,7 @@ void answerJobRequests(Stack* s) {
                     int konfiguraceKOdeslani = 0;
                     MPI_Send(&konfiguraceKOdeslani, 1, MPI_INT, source, MESSAGE_JOB_REQUIRE_ANSWER, MPI_COMM_WORLD);
 
-                    //printf("Odpovedel jsem ze namam praci k predani (Kdo: %d -> Komu: %d)\n", my_rank, source);
+                    printf("Odpovedel jsem ze namam praci k predani (Kdo: %d -> Komu: %d)\n", my_rank, source);
 
                 }
 
