@@ -137,9 +137,11 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
         // Pokud mam prazdny zasobnik - vytvoril jsem kompletni konfiguraci
         if (isEmpty(s)) {
 
+/*
             while (1) {
                 answerJobRequests(s);
             }
+*/
             break;
             // TODO: Ulozit nejlepsi reseni
             // TODO: Otestovat zda nebyl ukoncen algoritmus (globalni promenna?)
@@ -197,7 +199,7 @@ void askForJob(int pocetVrcholu, Stack* s) {
 
         poleKonfiguraci = malloc(lenght * sizeof (Config));
 
-        printf("Pocet konfiguraci: %d\n", lenght);
+        printf("Jsem procesor %d a dostal jsem %d konfiguraci.\n", my_rank, lenght);
 
         int j = 0;
         for (j = 0; j < lenght; j++) {
@@ -211,15 +213,15 @@ void askForJob(int pocetVrcholu, Stack* s) {
 
             //Nejprve přijmeme počet barev
             MPI_Recv(&pocetBarev, 1, MPI_INT, i, MESSAGE_JOB_REQUIRE_COLORS, MPI_COMM_WORLD, &status);
-            //printf("Počet barev: %i\n", pocetBarev);
+            printf("Počet barev: %i\n", pocetBarev);
 
             //Přijmeme počet prvků v konfiguraci
             MPI_Recv(&pocetPrvku, 1, MPI_INT, i, MESSAGE_JOB_REQUIRE_ITEMS, MPI_COMM_WORLD, &status);
-            //printf("Počet prvku: %i\n", pocetPrvku);
+            printf("Počet prvku: %i\n", pocetPrvku);
 
             //Přijmeme pole konfigurací
             MPI_Recv(polePrvku, pocetPrvku * sizeof (Prvek), MPI_BYTE, i, MESSAGE_JOB_REQUIRE_CONFIGURATION_ARRAY, MPI_COMM_WORLD, &status);
-            //printf("Přijmul jsem pole prvku: %d, %d\n", polePrvku[0].barva, polePrvku[0].vrchol);
+            printf("Přijmul jsem pole prvku: %d, %d\n", polePrvku[1].barva, polePrvku[1].vrchol);
 
         }
 
@@ -256,7 +258,7 @@ void answerJobRequests(Stack* s) {
                     int konfiguraceKOdeslani = (pocetKonfiguraci / 2);
                     int novyPocetKonfiguraci = pocetKonfiguraci - (pocetKonfiguraci / 2);
 
-                    printf("Celkem konfiguraci: %d, odesilam pocet konfiguraci: %d, nechavam si: %d\n", pocetKonfiguraci, konfiguraceKOdeslani, novyPocetKonfiguraci);
+                    //printf("Jsem procesor: %d. Celkem konfiguraci: %d, odesilam pocet konfiguraci: %d, nechavam si: %d\n", my_rank, pocetKonfiguraci, konfiguraceKOdeslani, novyPocetKonfiguraci);
 
                     MPI_Send(&konfiguraceKOdeslani, 1, MPI_INT, source, MESSAGE_JOB_REQUIRE_ANSWER, MPI_COMM_WORLD);
 
@@ -274,14 +276,17 @@ void answerJobRequests(Stack* s) {
                         sizeOfPocetPrvku = getPocetPrvku();
                         MPI_Send(&pocetBarev, 1, MPI_INT, source, MESSAGE_JOB_REQUIRE_COLORS, MPI_COMM_WORLD);
                         MPI_Send(&sizeOfPocetPrvku, 1, MPI_INT, source, MESSAGE_JOB_REQUIRE_ITEMS, MPI_COMM_WORLD);
-                        //MPI_Send(array, (sizeOfPocetPrvku * sizeof (Prvek)), MPI_BYTE, source, MESSAGE_JOB_REQUIRE_CONFIGURATION_ARRAY, MPI_COMM_WORLD);
+                        //printf("Jsem procesor %d a odesilam konfiguraci %d prosesoru %d.\n", my_rank, odesilanaKonfigurace, source);
+                        MPI_Send(array, (sizeOfPocetPrvku * sizeof (Prvek)), MPI_BYTE, source, MESSAGE_JOB_REQUIRE_CONFIGURATION_ARRAY, MPI_COMM_WORLD);
 
+/*
                         Prvek* test;
                         test = malloc(sizeof(Prvek));
                         test[0].barva = 0;
                         test[0].vrchol = 5;
 
                         MPI_Send(test, (sizeof (Prvek)), MPI_BYTE, source, MESSAGE_JOB_REQUIRE_CONFIGURATION_ARRAY, MPI_COMM_WORLD);
+*/
 
                     }
 
