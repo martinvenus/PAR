@@ -287,6 +287,12 @@ Prvek* getKonfigurace(int konfigurace) {
     return poleKonfiguraci[konfigurace].array;
 }
 
-void setPoleKonfoguraci(Config* pole){
+void setConfiguration(Config* pole, int pocetKonfiguraciArg, int pocetPrvkuArg){
+    printf("Prijimam konfigurace. Nahodny prvek(0): %d\n\n\n", pole[0].pocetBarev);
     poleKonfiguraci = pole;
+
+    printf("Nastavuji pocet prvku: %d\n\n\n", pocetPrvkuArg);
+    pocetPrvku = pocetPrvkuArg;
+
+    pocetKonfiguraci = pocetKonfiguraciArg;
 }

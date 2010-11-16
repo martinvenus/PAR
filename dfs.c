@@ -201,15 +201,15 @@ void askForJob(int pocetVrcholu, Stack* s) {
 
         printf("Jsem procesor %d a dostal jsem %d konfiguraci.\n", my_rank, lenght);
 
+        //TODO: Nastavit hodnotu proměnné do mbg.c
+        int pocetPrvku = 0;
+
         int j = 0;
         for (j = 0; j < lenght; j++) {
             Prvek* polePrvku;
             polePrvku = malloc(pocetVrcholu * sizeof (Prvek));
 
             int pocetBarev = 0;
-
-            //TODO: Nastavit hodnotu proměnné do mbg.c
-            int pocetPrvku = 0;
 
             //Nejprve přijmeme počet barev
             MPI_Recv(&pocetBarev, 1, MPI_INT, i, MESSAGE_JOB_REQUIRE_COLORS, MPI_COMM_WORLD, &status);
@@ -234,13 +234,16 @@ void askForJob(int pocetVrcholu, Stack* s) {
         /*
          * Odešleme konfigurace
          */
-        setPoleKonfiguraci(poleKonfiguraci);
+        setConfiguration(poleKonfiguraci, lenght, pocetPrvku);
 
+        /*
+         * Nyní řešíme zásobník
+         */
         int zasobnikSize = 0;
 
         //Přijme počet vrcholů v zásobníku
         MPI_Recv(&zasobnikSize, 1, MPI_INT, i, MESSAGE_JOB_REQUIRE_STACK_SIZE, MPI_COMM_WORLD, &status);
-        printf("XXXXXXXXXPočet prvků v zásobníku: %d\n", zasobnikSize);
+        //printf("XXXXXXXXXPočet prvků v zásobníku: %d\n", zasobnikSize);
 
         int vrcholZasobniku = 0;
 
@@ -253,8 +256,16 @@ void askForJob(int pocetVrcholu, Stack* s) {
         //Přijme vrchol zásobníku
         MPI_Recv(stackArray, zasobnikSize, MPI_INT, i, MESSAGE_JOB_REQUIRE_STACK_ARRAY, MPI_COMM_WORLD, &status);
         if (vrcholZasobniku > 0) {
-            printf("XXXXXXXXXPrvek (5) zásobníku: %d\n", stackArray[0]);
+            //printf("XXXXXXXXXPrvek (5) zásobníku: %d\n", stackArray[0]);
         }
+
+        //printf("XXXXXXXXXZásobník: %d\n", stackArray[1]);
+        memoryFreeStack(s); //uvolníme předchozí zásobník
+        s->array = stackArray;
+        //printf("XXXXXXXXXPrvek (5) zásobníku: %d\n", s->array[0]);
+        s->size = zasobnikSize;
+        s->top = vrcholZasobniku-1;
+
 
     }
 }
@@ -335,7 +346,7 @@ void answerJobRequests(Stack* s) {
                     int konfiguraceKOdeslani = 0;
                     MPI_Send(&konfiguraceKOdeslani, 1, MPI_INT, source, MESSAGE_JOB_REQUIRE_ANSWER, MPI_COMM_WORLD);
 
-                    printf("Odpovedel jsem ze namam praci k predani (Kdo: %d -> Komu: %d)\n", my_rank, source);
+                    //printf("Odpovedel jsem ze namam praci k predani (Kdo: %d -> Komu: %d)\n", my_rank, source);
 
                 }
 
