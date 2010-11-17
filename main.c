@@ -59,7 +59,6 @@ int main(int argc, char** argv) {
         char inputFile[255] = "";
 
         int i = 0;
-        int j = 0;
 
         //Načtení proměnných z příkazového řádku
         while (argv[i] != NULL) {
@@ -117,9 +116,8 @@ int main(int argc, char** argv) {
     /*
      * Nalezneme nejlepší řešení a zapíšeme ho na diagonálu matice sousednosti
      */
-    findBestColouring();
-    setBestSolutionToMatrix(pocetVrcholu);
-    printBestSolution(pocetVrcholu);
+    //findBestColouring();
+    //setBestSolutionToMatrix(pocetVrcholu);
 
     /*
      * Uvolníme paměť alokovanou pro jednotlivé struktury

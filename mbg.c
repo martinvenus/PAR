@@ -309,7 +309,6 @@ int getVelikostPoleKonfiguraci() {
 
 void setVelikostPoleKonfiguraci(int size) {
     velikostPole = size;
-    printf("Nastavil jsem velikost pole konfiguraci na %d\n", size);
 }
 
 Prvek* getKonfigurace(int konfigurace) {
