@@ -148,16 +148,24 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
             }
         }
 
+        int k = 0;
+        for (k = 0; k < pocetVrcholu; k++) {
+            printf("diag:");
+            printf("[%d]", diag[k]);
+            printf("\n");
+        }
+
+
         // Pokud mam prazdny zasobnik - vytvoril jsem kompletni konfiguraci
         if (isEmpty(s)) {
 
 
 
-            /*
-                        while (1) {
-                            answerJobRequests(s, pocetVrcholu);
-                        }
-             */
+
+            while (1) {
+                answerJobRequests(s, pocetVrcholu);
+            }
+
 
             break;
             // TODO: Ulozit nejlepsi reseni
@@ -335,10 +343,12 @@ void answerJobRequests(Stack* s, int pocetVrcholu) {
                 if ((pocetKonfiguraci > 1) && (!isEmpty(s))) {
                     int konfiguraceKOdeslani = (pocetKonfiguraci / 2);
                     int novyPocetKonfiguraci = pocetKonfiguraci - (pocetKonfiguraci / 2);
+                    int velikostPole = getVelikostPoleKonfiguraci();
 
                     //printf("Jsem procesor: %d. Celkem konfiguraci: %d, odesilam pocet konfiguraci: %d, nechavam si: %d\n", my_rank, pocetKonfiguraci, konfiguraceKOdeslani, novyPocetKonfiguraci);
 
                     MPI_Send(&konfiguraceKOdeslani, 1, MPI_INT, source, MESSAGE_JOB_REQUIRE_ANSWER, MPI_COMM_WORLD);
+                    MPI_Send(&velikostPole, 1, MPI_INT, source, MESSAGE_JOB_REQUIRE_CONFIGURATION_ARRAY_SIZE, MPI_COMM_WORLD);
 
                     int l = 0;
                     for (l = 0; l < konfiguraceKOdeslani; l++) {
