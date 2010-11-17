@@ -148,13 +148,6 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
             }
         }
 
-        int k = 0;
-        for (k = 0; k < pocetVrcholu; k++) {
-            printf("diag:");
-            printf("[%d]", diag[k]);
-            printf("\n");
-        }
-
 
         // Pokud mam prazdny zasobnik - vytvoril jsem kompletni konfiguraci
         if (isEmpty(s)) {
@@ -224,12 +217,13 @@ void askForJob(int pocetVrcholu, Stack* s) {
         //Inicializace paměti pro konfigurace
         Config* poleKonfiguraci;
 
+
         int velikostPoleKonfiguraci = 0;
         MPI_Recv(&velikostPoleKonfiguraci, 1, MPI_INT, i, MESSAGE_JOB_REQUIRE_CONFIGURATION_ARRAY_SIZE, MPI_COMM_WORLD, &status);
 
         poleKonfiguraci = malloc(velikostPoleKonfiguraci * sizeof (Config));
 
-        setVelikostPoleKonfiguraci(setVelikostPoleKonfiguraci);
+        setVelikostPoleKonfiguraci(velikostPoleKonfiguraci);
 
         //printf("Jsem procesor %d a dostal jsem %d konfiguraci.\n", my_rank, lenght);
 

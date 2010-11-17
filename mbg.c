@@ -12,7 +12,7 @@
 #define	NEW_COLOR -1
 
 //TODO: Upravit na dynamickou relokaci paměti
-int velikostPole = 1000;
+int velikostPole = 50;
 int pocetKonfiguraci = 0;
 int pocetPrvku = 0;
 int pridanoKonfiguraci = 0;
@@ -29,7 +29,7 @@ extern int my_rank;
 
 void coloring(int idNovehoVrcholu, int pocetVrcholu) {
 
-    printf("Počet konfigurací: %d na procesoru: %d\n, velikost pole: %d", pocetKonfiguraci, my_rank, velikostPole);
+    //printf("Počet konfigurací: %d na procesoru: %d\n, velikost pole: %d", pocetKonfiguraci, my_rank, velikostPole);
 
     //printf("Debug - Obarvuji vrchol %i\n", idNovehoVrcholu);
 
@@ -64,7 +64,7 @@ void coloring(int idNovehoVrcholu, int pocetVrcholu) {
 
     int i = 0;
     pridanoKonfiguraci = 0;
-    printf("Debug - pocet konfiguraci: %i\n", pocetKonfiguraci);
+    //printf("Debug - pocet konfiguraci: %i\n", pocetKonfiguraci);
 
     for (i = 0; i < pocetKonfiguraci; i++) {
 
@@ -154,6 +154,7 @@ void addVrchol(int konfigurace, int vrchol, int barva, int pocetVrcholu) {
         if (newConf >= velikostPole){
             zvetsiPole();
         }
+        printf("ID nove konfigurace %d, velikost pole: %d\n", newConf, velikostPole);
 
         //printf("Druha vetev pridavani. Pridano konfiguraci: %i\n", pridanoKonfiguraci);
         Prvek* newArray;
@@ -181,7 +182,7 @@ void addVrchol(int konfigurace, int vrchol, int barva, int pocetVrcholu) {
 
 void zvetsiPole(){
         int novaVelikost = 2 * velikostPole;
-        poleKonfiguraci = realloc(poleKonfiguraci, novaVelikost * sizeof (int));
+        poleKonfiguraci = realloc(poleKonfiguraci, novaVelikost * sizeof (Config));
 
         if (poleKonfiguraci == NULL) {
             printf("Memory reallocation failed for poleKonfiguraci.\n");
@@ -312,6 +313,7 @@ int getVelikostPoleKonfiguraci() {
 
 void setVelikostPoleKonfiguraci(int size) {
     velikostPole = size;
+    printf("Nastavil jsem velikost pole konfiguraci na %d\n", size);
 }
 
 Prvek* getKonfigurace(int konfigurace) {
@@ -321,10 +323,8 @@ Prvek* getKonfigurace(int konfigurace) {
 }
 
 void setConfiguration(Config* pole, int pocetKonfiguraciArg, int pocetPrvkuArg) {
-    printf("Prijimam konfigurace. Nahodny prvek(0): %d\n\n\n", pole[0].pocetBarev);
     poleKonfiguraci = pole;
 
-    printf("Nastavuji pocet prvku: %d\n\n\n", pocetPrvkuArg);
     pocetPrvku = pocetPrvkuArg;
 
     pocetKonfiguraci = pocetKonfiguraciArg;
