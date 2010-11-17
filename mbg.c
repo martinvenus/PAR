@@ -28,8 +28,8 @@ extern int** maticeSousednosti;
 void coloring(int idNovehoVrcholu, int pocetVrcholu) {
 
     //printf("Debug - Obarvuji vrchol %i\n", idNovehoVrcholu);
-    
-    
+
+
     if (pocetKonfiguraci == 0) {
 
         //printf("\n\n\n\nNULA KONFIGURACI\n\n\n\n");
@@ -269,7 +269,7 @@ int getPocetKonfiguraci() {
 void setPocetKonfiguraci(int pocet) {
 
     int i;
-    for (i = pocet+1; i < pocetKonfiguraci; i++) {
+    for (i = pocet + 1; i < pocetKonfiguraci; i++) {
         free(poleKonfiguraci[i].array);
     }
     pocetKonfiguraci = pocet;
@@ -284,13 +284,21 @@ int getPocetPrvku() {
     return pocetPrvku;
 }
 
+int getVelikostPoleKonfiguraci() {
+    return velikostPole;
+}
+
+void setVelikostPoleKonfiguraci(int size) {
+    velikostPole = size;
+}
+
 Prvek* getKonfigurace(int konfigurace) {
     //printf("\nPozadavek na konfiguraci: %d z celkoveho poctu: %d\n", konfigurace+1, pocetKonfiguraci);
     //printf("Vypis konfigurace: %d, vrchol 0 ma barvu %d\n", konfigurace, poleKonfiguraci[konfigurace].array[0].barva);
     return poleKonfiguraci[konfigurace].array;
 }
 
-void setConfiguration(Config* pole, int pocetKonfiguraciArg, int pocetPrvkuArg){
+void setConfiguration(Config* pole, int pocetKonfiguraciArg, int pocetPrvkuArg) {
     printf("Prijimam konfigurace. Nahodny prvek(0): %d\n\n\n", pole[0].pocetBarev);
     poleKonfiguraci = pole;
 
