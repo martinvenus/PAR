@@ -232,7 +232,8 @@ void askForJob(int pocetVrcholu, Stack* s) {
     for (i = 0; i < processSum; i++) {
         if (i != my_rank) {
 
-            MPI_Send(&nothing, 1, MPI_INT, i, MESSAGE_JOB_REQUIRE, MPI_COMM_WORLD);
+            MPI_Request request;
+            MPI_Isend(&nothing, 1, MPI_INT, i, MESSAGE_JOB_REQUIRE, MPI_COMM_WORLD, &request);
             //printf("Pozadal jsem o praci (Kdo: %d -> Koho: %d)\n", my_rank, i);
 
             int flag = 0;
@@ -251,11 +252,11 @@ void askForJob(int pocetVrcholu, Stack* s) {
                  */
                 answerJobRequests(s, pocetVrcholu);
 
-                //pesekRoot();
-                //pesekOstatni();
+                pesekRoot();
+                pesekOstatni();
 
                 if (algoritmusUkoncen == 1) {
-                    return;
+                    break;
                 }
             }
 
@@ -501,7 +502,7 @@ void pesekRoot() {
         //Zkusíme přijmout peška
         if (pesek_sent == 1) {
             int flag = 0;
-            int pesek_hodnota = -1;
+            int pesek_hodnota = 999;
             //Ověříme, zda nedorazil pešek
             MPI_Iprobe(processSum - 1, PESEK, MPI_COMM_WORLD, &flag, &status);
 
@@ -524,19 +525,21 @@ void pesekRoot() {
         }
         //Konec přijímání peška
 
-        //Odesílání peška
-        pokusyPrijetiPrace++;
-        if (pokusyPrijetiPrace % processSum == 0) {
+        if (algoritmusUkoncen == 0) {
+            //Odesílání peška
+            pokusyPrijetiPrace++;
+            if (pokusyPrijetiPrace % processSum == 0) {
 
-            //Jsem procesor 0 a odesílám peška
+                //Jsem procesor 0 a odesílám peška
 
-            if (pesek_sent == 0) {
-                int pesek_color = PESEK_WHITE;
-                MPI_Isend(&pesek_color, 1, MPI_INT, my_rank + 1, PESEK, MPI_COMM_WORLD, &request);
-                pesek_sent = 1;
-                printf("Odeslal jsem peška. 0\n");
+                if (pesek_sent == 0) {
+                    int pesek_color = PESEK_WHITE;
+                    MPI_Isend(&pesek_color, 1, MPI_INT, my_rank + 1, PESEK, MPI_COMM_WORLD, &request);
+                    pesek_sent = 1;
+                    printf("Odeslal jsem peška. 0\n");
+                }
+
             }
-
         }
     }
 }
