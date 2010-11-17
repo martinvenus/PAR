@@ -151,7 +151,7 @@ void addVrchol(int konfigurace, int vrchol, int barva, int pocetVrcholu) {
         /*
          * Zvětšíme pole
          */
-        if (newConf >= velikostPole){
+        if (newConf >= velikostPole) {
             zvetsiPole();
         }
 
@@ -179,16 +179,16 @@ void addVrchol(int konfigurace, int vrchol, int barva, int pocetVrcholu) {
     isCurrentConfigurationOver = 1;
 }
 
-void zvetsiPole(){
-        int novaVelikost = 2 * velikostPole;
-        poleKonfiguraci = realloc(poleKonfiguraci, novaVelikost * sizeof (Config));
+void zvetsiPole() {
+    int novaVelikost = 2 * velikostPole;
+    poleKonfiguraci = realloc(poleKonfiguraci, novaVelikost * sizeof (Config));
 
-        if (poleKonfiguraci == NULL) {
-            printf("Memory reallocation failed for poleKonfiguraci.\n");
-        } else {
-            velikostPole = novaVelikost;
-        }
+    if (poleKonfiguraci == NULL) {
+        printf("Memory reallocation failed for poleKonfiguraci.\n");
+    } else {
+        velikostPole = novaVelikost;
     }
+}
 
 Prvek* copyArray(Prvek* sourceArray, int pocetVrcholu, int pocetPrvku) {
 
@@ -226,6 +226,9 @@ void memoryFreeConfigurationArray() {
     free(poleKonfiguraci);
 }
 
+/*
+ Pomocna funkce pro vypis konfiguraci v DEBUG modu
+ */
 void showData() {
     int i = 0;
     for (i = 0; i < pocetKonfiguraci; i++) {
@@ -238,6 +241,9 @@ void showData() {
     }
 }
 
+/*
+ Nalezne nejlepsi ziskane obarveni
+ */
 void findBestColouring() {
     int best = -1;
     int bestPocetBarev = 9999;
@@ -254,6 +260,9 @@ void findBestColouring() {
     countColorBestSolution = bestPocetBarev;
 }
 
+/*
+ Nastavi nejlepsi nalezenou konfiguraci na diagonalu matice
+ */
 void setBestSolutionToMatrix(int pocetVrcholu) {
     int i = 0;
 
@@ -263,6 +272,9 @@ void setBestSolutionToMatrix(int pocetVrcholu) {
 
 }
 
+/*
+ Vypise nejlepsi nalezene reseni
+ */
 void printBestSolution(int pocetVrcholu) {
     printf("Pocet pouzitych barev: %i procesorem %d\n", countColorBestSolution, my_rank);
 
@@ -277,14 +289,23 @@ void printBestSolution(int pocetVrcholu) {
     }
 }
 
+/*
+ Vrati aktualni pocet nalezenych konfiguraci
+ */
 int getPocetKonfiguraci() {
     return pocetKonfiguraci;
 }
 
-int getBestColors(){
+/*
+ Vrati aktualni nejmensi pocet barev
+ */
+int getBestColors() {
     return countColorBestSolution;
 }
 
+/*
+ Nastavi pocet konfiguraci na pozadovanou hodnotu
+ */
 void setPocetKonfiguraci(int pocet) {
 
     int i;
@@ -295,28 +316,46 @@ void setPocetKonfiguraci(int pocet) {
 
 }
 
+/*
+ Vrati pocet barev pouzitych v dane konfiguraci
+ */
 int getPocetBarev(int konfigurace) {
     return poleKonfiguraci[konfigurace].pocetBarev;
 }
 
+/*
+ Vrati pocet prvku v aktualnim stupni konfiguraci
+ */
 int getPocetPrvku() {
     return pocetPrvku;
 }
 
+/*
+ Vrati velikost pole konfiguraci
+ */
 int getVelikostPoleKonfiguraci() {
     return velikostPole;
 }
 
+/*
+ Nastavi velikost pole konfiguraci
+ */
 void setVelikostPoleKonfiguraci(int size) {
     velikostPole = size;
 }
 
+/*
+ Vrati danou konfiguraci
+ */
 Prvek* getKonfigurace(int konfigurace) {
     //printf("\nPozadavek na konfiguraci: %d z celkoveho poctu: %d\n", konfigurace+1, pocetKonfiguraci);
     //printf("Vypis konfigurace: %d, vrchol 0 ma barvu %d\n", konfigurace, poleKonfiguraci[konfigurace].array[0].barva);
     return poleKonfiguraci[konfigurace].array;
 }
 
+/*
+ Nastavi pole konfiguraci
+ */
 void setConfiguration(Config* pole, int pocetKonfiguraciArg, int pocetPrvkuArg) {
     poleKonfiguraci = pole;
 

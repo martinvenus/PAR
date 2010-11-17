@@ -30,9 +30,12 @@ int pokusyPrijetiPrace = 0;
 int bestColorsReceived = 9999;
 int bestColorReceivedProcessor = -1;
 
+/*
+ Vlozeni dat do zasobniku
+ */
 void push(Stack *s, int value) {
     if (full(s)) {
-        int novaVelikost = 2 * s->size;
+        int novaVelikost = 2 * s->size; // dynamicka realokace pameti
         s->array = realloc(s->array, novaVelikost * sizeof (int));
 
         if (s->array == NULL) {
@@ -46,6 +49,9 @@ void push(Stack *s, int value) {
     (s->top)++;
 }
 
+/*
+ Vyber dat ze zasobniku
+ */
 int pop(Stack *s) {
     if (s->top > 0) {
         (s->top)--;
@@ -55,6 +61,9 @@ int pop(Stack *s) {
     }
 }
 
+/*
+ Inicializace zasobniku
+ */
 void init(Stack *s, int size) {
     s->top = 0;
 
@@ -68,14 +77,23 @@ void init(Stack *s, int size) {
     }
 }
 
+/*
+ Overeni zda neni zasobnik plny
+ */
 int full(Stack *s) {
     return (s->top >= s->size);
 }
 
+/*
+ Overeni zda neni zasobnik prazdny
+ */
 int isEmpty(Stack *s) {
     return (s->top == 0);
 }
 
+/*
+ Vypsani zasobniku
+ */
 void stackPrint(Stack *s) {
     int i;
     if (s->top == 0)
@@ -89,16 +107,24 @@ void stackPrint(Stack *s) {
     }
 }
 
+/*
+ Uvolneni pameti zasobniku
+ */
 void memoryFreeStack(Stack *s) {
     free(s->array);
 }
 
+/*
+ Hlavni funkce - DFS pruchod grafem
+ */
 void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
+
     int x = 0;
     int sousede = 0;
     int aktualniVrchol;
     int bestColors = -1;
 
+    // alokace a inicializace pole pro ukladani diagonaly
     diag = malloc(pocetVrcholu * sizeof (int));
     int k = 0;
     for (k = 0; k < pocetVrcholu; k++) {
@@ -113,6 +139,7 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
         //printf("Vrchol %i vlozen do zasobniku\n", aktualniVrchol);
     } else {
 
+        // pokud je zasobnik prazdny (procesor nema praci)
         while (isEmpty(s)) {
 
             // Požádáme ostatní procesory o práci
@@ -124,9 +151,6 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
             if (algoritmusUkoncen == 1) {
                 break;
             }
-
-            // postupne posli zadost o praci vsem procesorum
-            // musi cekat na odpoved a teprve kdyz nedostal praci tak se bude ptat dal
 
         }
 
@@ -148,6 +172,7 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
         //printf("\nA na topu mam: %d\n", s->array[s->top - 1]);
         //printf("\nPricemz velikost zasobniku je: %d\n", s->size);
 
+        // vybereme vrchol ktery chceme obarvit ze zasobniku
         aktualniVrchol = pop(s);
 
         //printf("\nPop se povedl - popnul jsem: %d\n", aktualniVrchol);
@@ -155,8 +180,11 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
 
         //printf("\nPocet vrcholu: %d\n", pocetVrcholu);
 
+        // obarvime vrchol
         coloring(aktualniVrchol, pocetVrcholu);
 
+
+        // vyhledame nenavstivene sousedy vrcholu a ty vlozime do zasobniku
         sousede = 0;
         for (x = 0; x < pocetVrcholu; x++) {
             if (x == aktualniVrchol) continue; // preskocim diagonalu
@@ -177,31 +205,40 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
 
             //printf("Procesor %d hlasi: Dosla mi prace\n", my_rank);
 
+
+            // ulozime si nejlepsi reseni
             findBestColouring();
             if ((bestColors > getBestColors()) || (bestColors == -1)) {
                 bestColors = getBestColors();
                 setBestSolutionToMatrix(pocetVrcholu);
             }
 
+            // obarvime procesor pro potreby posilani peska
             if (my_color == PESEK_BROWN) {
                 my_color = PESEK_BLACK;
             } else {
                 my_color = PESEK_WHITE;
             }
 
+            // hledame novou praci
             while (1) {
+
+                // odpovime na pozadavky na praci (nemame praci)
                 answerJobRequests(s, pocetVrcholu);
 
                 if (algoritmusUkoncen == 0) {
+                    // TODO: Ptat se na praci
                     //askForJob(pocetVrcholu, s);
                 }
 
+                // pokud jsme dostali praci, obarvujeme
                 if (!isEmpty(s)) {
                     //printf("Procesor %d dostal praci.\n", my_rank);
                     //answerJobRequests(s,pocetVrcholu);
                     break;
                 }
 
+                // zkontrolijeme posilani pesku
                 pesekRoot();
                 pesekOstatni();
 
@@ -252,6 +289,7 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
         }
     }
 
+    // uvolnime pole pro uchovani diagonaly
     free(diag);
 
 }
@@ -265,6 +303,7 @@ void askForJob(int pocetVrcholu, Stack* s) {
     int lenght;
     int nothing = 1;
 
+    // vsechny procesory (krome sebe sama) zkousime postupne zadat o praci
     int i = 0;
     for (i = 0; i < processSum; i++) {
         if (i != my_rank) {
@@ -288,6 +327,7 @@ void askForJob(int pocetVrcholu, Stack* s) {
                  */
                 answerJobRequests(s, pocetVrcholu);
 
+                // kontrolujeme pesky
                 pesekRoot();
                 pesekOstatni();
 
@@ -396,14 +436,17 @@ void answerJobRequests(Stack* s, int pocetVrcholu) {
     int flag;
     int message = -1;
 
+    // kontrolujeme prichozi pozadavky na praci od vsech procesoru
     for (source = 0; source < processSum; source++) {
 
+        // necekame praci sami od sebe
         if (source != my_rank) {
             /* checking if message has arrived */
             MPI_Iprobe(source, MESSAGE_JOB_REQUIRE, MPI_COMM_WORLD, &flag, &status);
             //printf("Testovani pozadavku na praci. Flag: %d, procesor: %d\n", flag, source);
             if (flag) {
 
+                // ziskame pocet konfiguraci ktere muzeme predat
                 int pocetKonfiguraci = getPocetKonfiguraci();
 
                 //printf("Pred prijetim pozadavek na praci\n");
@@ -423,6 +466,7 @@ void answerJobRequests(Stack* s, int pocetVrcholu) {
                     MPI_Send(&konfiguraceKOdeslani, 1, MPI_INT, source, MESSAGE_JOB_REQUIRE_ANSWER, MPI_COMM_WORLD);
                     MPI_Send(&velikostPole, 1, MPI_INT, source, MESSAGE_JOB_REQUIRE_CONFIGURATION_ARRAY_SIZE, MPI_COMM_WORLD);
 
+                    // posleme vsechny konfigurace
                     int l = 0;
                     for (l = 0; l < konfiguraceKOdeslani; l++) {
                         int odesilanaKonfigurace;
@@ -430,6 +474,7 @@ void answerJobRequests(Stack* s, int pocetVrcholu) {
                         int sizeOfPocetPrvku;
                         Prvek* array;
 
+                        // rozdelime pocet konfiguraci na dve poloviny
                         odesilanaKonfigurace = novyPocetKonfiguraci + l;
                         pocetBarev = getPocetBarev(odesilanaKonfigurace);
 
@@ -444,6 +489,7 @@ void answerJobRequests(Stack* s, int pocetVrcholu) {
                         } while (!flag);
                     }
 
+                    // nyni posleme zasobnik neprohledanych vrcholu
                     int zasobnikTop;
                     int zasobnikSize;
                     int* zasobnikArray;
@@ -468,9 +514,11 @@ void answerJobRequests(Stack* s, int pocetVrcholu) {
                         my_color = PESEK_BROWN;
                     }
 
+                    // zmensime svuj pocet konfiguraci
                     setPocetKonfiguraci(novyPocetKonfiguraci);
 
                 } else {
+
                     // odpovez ze nemam praci
 
                     //TODO: Upravit nothing
@@ -488,6 +536,9 @@ void answerJobRequests(Stack* s, int pocetVrcholu) {
     }
 }
 
+/*
+ Funkce pro obsluhu peska na procesorech s ID vetsim nez 0
+ */
 void pesekOstatni() {
     if (my_rank > 0) {
         MPI_Request request;
@@ -528,6 +579,9 @@ void pesekOstatni() {
     }
 }
 
+/*
+ Funkce pro obsluhu peska na procesoru 0
+ */
 void pesekRoot() {
     if (my_rank == 0) {
         MPI_Request request;
