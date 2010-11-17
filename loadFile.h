@@ -9,6 +9,7 @@
 #define	LOADFILE_H
 
 int** loadFile(char* file);
+int getPocetVrcholu();
 
 #endif	/* LOADFILE_H */
 
