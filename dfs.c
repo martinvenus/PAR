@@ -191,11 +191,12 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
                 answerJobRequests(s, pocetVrcholu);
 
                 if (algoritmusUkoncen == 0) {
-                    //askForJob(pocetVrcholu, s);
+                    askForJob(pocetVrcholu, s);
                 }
 
                 if (!isEmpty(s)) {
                     //printf("Procesor %d dostal praci.\n", my_rank);
+                    //answerJobRequests(s,pocetVrcholu);
                     break;
                 }
 
