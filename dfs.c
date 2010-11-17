@@ -18,6 +18,8 @@ extern int my_rank;
 extern int processSum;
 int* diag;
 extern MPI_Status status;
+int my_color = PESEK_WHITE;
+int algoritmusUkoncen = 0;
 
 void push(Stack *s, int value) {
     if (full(s)) {
@@ -104,8 +106,12 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
     } else {
 
         while (isEmpty(s)) {
+
             // Požádáme ostatní procesory o práci
             askForJob(pocetVrcholu, s);
+
+            // ověříme, zda nepřišel pešek
+            pesekOstatni();
 
             // postupne posli zadost o praci vsem procesorum
             // musi cekat na odpoved a teprve kdyz nedostal praci tak se bude ptat dal
@@ -161,8 +167,14 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
                 setBestSolutionToMatrix(pocetVrcholu);
             }
 
+            if(my_color == PESEK_BROWN){
+                my_color = PESEK_BLACK;
+            }
+            else{
+                my_color = PESEK_WHITE;
+            }
+
             int pokusy = 0;
-            int finished = 0;
 
             int pesek_sent = 0;
 
@@ -171,7 +183,7 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
                 askForJob(pocetVrcholu, s);
 
                 if (!isEmpty(s)) {
-                    printf("Procesor %d hlasi: Dostal jsem praci!!\n", my_rank);
+                    printf("Procesor %d dostal praci.\n", my_rank);
                     break;
                 }
 
@@ -194,7 +206,7 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
                             int final = PESEK_FINAL;
                             MPI_ISend(&final, 1, MPI_INT, i, PESEK_FINAL, MPI_COMM_WORLD);
 
-                            finished = 1;
+                            algoritmusUkoncen = 1;
                         }
                     }
                     //Konec přijímání peška
@@ -213,50 +225,29 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
 
                     }
                 } else {
-                    int pesek_hodnota = -1;
-                    int flag = 0;
-                    //Ověříme, zda nedorazil pešek
-                    MPI_Iprobe(my_rank - 1, PESEK, MPI_COMM_WORLD, &flag, &status);
-
-                    if (flag) {
-                        MPI_Recv(&pesek_hodnota, 1, MPI_INT, my_rank - 1, PESEK, MPI_COMM_WORLD, &status);
-
-                        //TODO: Obarvit a poslat peška
-                        MPI_ISend(&XXX, 1, MPI_INT, (my_rank + 1) % processSum, PESEK, MPI_COMM_WORLD);
-                    } else {
-                        //Ověříme, zda nedorazil ukončovací pešek
-                        MPI_Iprobe(my_rank - 1, PESEK_FINAL, MPI_COMM_WORLD, &flag, &status);
-
-                        if (flag) {
-                            MPI_Recv(&pesek_hodnota, 1, MPI_INT, my_rank - 1, PESEK_FINAL, MPI_COMM_WORLD, &status);
-
-                            MPI_ISend(&pesek_hodnota, 1, MPI_INT, (my_rank + 1) % processSum, PESEK_FINAL, MPI_COMM_WORLD);
-
-                            finished = 1;
-                        }
-                    }
-
+                    pesekOstatni();
                 }
 
             }
 
-            if (finished == 1) {
-
-                break;
-            }
-
-
-            // TODO: Ulozit nejlepsi reseni
-            // TODO: Otestovat zda nebyl ukoncen algoritmus (globalni promenna?)
-            //       Pokud Ano, pak breaknout, pokud ne pak dalsi ToDo
-            // TODO: Poslat pozadavek na praci nahodnemu procesoru + zvysovat citac
         }
 
+        if (algoritmusUkoncen == 1) {
+            break;
+        }
+
+
+        // TODO: Ulozit nejlepsi reseni
+        // TODO: Otestovat zda nebyl ukoncen algoritmus (globalni promenna?)
+        //       Pokud Ano, pak breaknout, pokud ne pak dalsi ToDo
+        // TODO: Poslat pozadavek na praci nahodnemu procesoru + zvysovat citac
     }
 
-    free(diag);
+}
 
-    // TODO: Odeslat nejlepsi nalezene reseni
+free(diag);
+
+// TODO: Odeslat nejlepsi nalezene reseni
 }
 
 /*
@@ -390,6 +381,7 @@ void askForJob(int pocetVrcholu, Stack* s) {
                 }
          */
 
+        my_color = PESEK_BLACK;
 
     }
 }
@@ -462,6 +454,9 @@ void answerJobRequests(Stack* s, int pocetVrcholu) {
 
                     MPI_Send(diag, pocetVrcholu, MPI_INT, source, MESSAGE_JOB_REQUIRE_DIAG, MPI_COMM_WORLD);
 
+                    if (source < my_rank) {
+                        my_color = PESEK_BROWN;
+                    }
 
                     setPocetKonfiguraci(novyPocetKonfiguraci);
 
@@ -483,4 +478,31 @@ void answerJobRequests(Stack* s, int pocetVrcholu) {
     }
 }
 
+void pesekOstatni() {
+    int pesek_hodnota = -1;
+    int flag = 0;
+    //Ověříme, zda nedorazil pešek
+    MPI_Iprobe(my_rank - 1, PESEK, MPI_COMM_WORLD, &flag, &status);
 
+    if (flag) {
+        MPI_Recv(&pesek_hodnota, 1, MPI_INT, my_rank - 1, PESEK, MPI_COMM_WORLD, &status);
+
+        if (my_color == PESEK_BLACK) {
+            pesek_hodnota = PESEK_BLACK;
+        }
+        MPI_ISend(&pesek_hodnota, 1, MPI_INT, (my_rank + 1) % processSum, PESEK, MPI_COMM_WORLD);
+        my_color = PESEK_WHITE;
+    } else {
+        //Ověříme, zda nedorazil ukončovací pešek
+        MPI_Iprobe(my_rank - 1, PESEK_FINAL, MPI_COMM_WORLD, &flag, &status);
+
+        if (flag) {
+            MPI_Recv(&pesek_hodnota, 1, MPI_INT, my_rank - 1, PESEK_FINAL, MPI_COMM_WORLD, &status);
+
+            MPI_ISend(&pesek_hodnota, 1, MPI_INT, (my_rank + 1) % processSum, PESEK_FINAL, MPI_COMM_WORLD);
+
+            algoritmusUkoncen = 1;
+        }
+    }
+
+}
