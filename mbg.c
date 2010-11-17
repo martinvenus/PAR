@@ -201,13 +201,6 @@ Prvek* copyArray(Prvek* sourceArray, int pocetVrcholu, int pocetPrvku) {
         array[i] = sourceArray[i];
     }
 
-    for (i = 0; i < pocetPrvku; i++) {
-
-        //printf("Prochazim nove pole: %i, %i", array[i].vrchol, array[i].barva);
-    }
-
-
-
     return array;
 }
 
@@ -295,7 +288,7 @@ int getBestColors(){
 void setPocetKonfiguraci(int pocet) {
 
     int i;
-    for (i = pocet + 1; i < pocetKonfiguraci; i++) {
+    for (i = pocet; i < pocetKonfiguraci; i++) {
         free(poleKonfiguraci[i].array);
     }
     pocetKonfiguraci = pocet;

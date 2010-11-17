@@ -164,25 +164,84 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
             int pokusy = 0;
             int finished = 0;
 
+            int pesek_sent = 0;
+
             while (1) {
                 answerJobRequests(s, pocetVrcholu);
                 askForJob(pocetVrcholu, s);
+
                 if (!isEmpty(s)) {
                     printf("Procesor %d hlasi: Dostal jsem praci!!\n", my_rank);
                     break;
                 }
-//                if (my_rank == 0) {
-                    pokusy++;
-                    if (pokusy % (processSum*10) == 0) {
-                        //posli peska
-                        finished = 1;
-                        break;
+
+                if (my_rank == 0) {
+
+                    //Zkusíme přijmout peška
+                    if (pesek_sent = 1) {
+                        int flag = 0;
+                        int pesek_hodnota = -1;
+                        //Ověříme, zda nedorazil pešek
+                        MPI_Iprobe(processSum - 1, PESEK, MPI_COMM_WORLD, &flag, &status);
+
+                        if (flag) {
+                            MPI_Recv(&pesek_hodnota, 1, MPI_INT, processSum - 1, PESEK, MPI_COMM_WORLD, &status);
+                            pesek_sent = 0;
+                        }
+
+                        // Odesíláme ukončovacího peška
+                        if (pesek_hodnota = PESEK_WHITE) {
+                            int final = PESEK_FINAL;
+                            MPI_ISend(&final, 1, MPI_INT, i, PESEK_FINAL, MPI_COMM_WORLD);
+
+                            finished = 1;
+                        }
                     }
-  //              }
+                    //Konec přijímání peška
+
+                    //Odesílání peška
+                    pokusy++;
+                    if (pokusy % processSum == 0) {
+
+                        //Jsem procesor 0 a odesílám peška
+
+                        if (pesek_sent == 0) {
+                            int pesek_color = PESEK_WHITE;
+                            MPI_ISend(&pesek_color, 1, MPI_INT, i, PESEK, MPI_COMM_WORLD);
+                            pesek_sent = 1;
+                        }
+
+                    }
+                } else {
+                    int pesek_hodnota = -1;
+                    int flag = 0;
+                    //Ověříme, zda nedorazil pešek
+                    MPI_Iprobe(my_rank - 1, PESEK, MPI_COMM_WORLD, &flag, &status);
+
+                    if (flag) {
+                        MPI_Recv(&pesek_hodnota, 1, MPI_INT, my_rank - 1, PESEK, MPI_COMM_WORLD, &status);
+
+                        //TODO: Obarvit a poslat peška
+                        MPI_ISend(&XXX, 1, MPI_INT, (my_rank + 1) % processSum, PESEK, MPI_COMM_WORLD);
+                    } else {
+                        //Ověříme, zda nedorazil ukončovací pešek
+                        MPI_Iprobe(my_rank - 1, PESEK_FINAL, MPI_COMM_WORLD, &flag, &status);
+
+                        if (flag) {
+                            MPI_Recv(&pesek_hodnota, 1, MPI_INT, my_rank - 1, PESEK_FINAL, MPI_COMM_WORLD, &status);
+
+                            MPI_ISend(&pesek_hodnota, 1, MPI_INT, (my_rank + 1) % processSum, PESEK_FINAL, MPI_COMM_WORLD);
+
+                            finished = 1;
+                        }
+                    }
+
+                }
 
             }
 
             if (finished == 1) {
+
                 break;
             }
 
@@ -312,6 +371,7 @@ void askForJob(int pocetVrcholu, Stack* s) {
         }
 
         //printf("XXXXXXXXXZásobník: %d\n", stackArray[1]);
+
         memoryFreeStack(s); //uvolníme předchozí zásobník
         s->array = stackArray;
         //printf("XXXXXXXXXPrvek zásobníku: %d\n", s->array[0]);
