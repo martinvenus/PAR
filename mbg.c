@@ -11,7 +11,6 @@
 
 #define	NEW_COLOR -1
 
-//TODO: Upravit na dynamickou relokaci paměti
 int velikostPole = 50;
 int pocetKonfiguraci = 0;
 int pocetPrvku = 0;
@@ -25,6 +24,7 @@ int countColorBestSolution = -1;
 Config* poleKonfiguraci;
 extern int** maticeSousednosti;
 
+extern int root;
 extern int my_rank;
 
 void coloring(int idNovehoVrcholu, int pocetVrcholu) {

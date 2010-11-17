@@ -15,6 +15,8 @@
 #define NO_JOB 0
 
 extern int my_rank;
+extern int root;
+
 extern int processSum;
 int* diag;
 extern MPI_Status status;
@@ -104,7 +106,7 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
     }
 
     // Procesor 0 zacne pracovat, ostatni cekaji
-    if (my_rank == 0) {
+    if (my_rank == root) {
         aktualniVrchol = 0;
         diag[0] = 2;
         push(s, aktualniVrchol); // vložím aktuílní vrchol do zásobníku
@@ -191,7 +193,7 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
                 answerJobRequests(s, pocetVrcholu);
 
                 if (algoritmusUkoncen == 0) {
-                    askForJob(pocetVrcholu, s);
+                    //askForJob(pocetVrcholu, s);
                 }
 
                 if (!isEmpty(s)) {
@@ -215,7 +217,7 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
     /*
      * Odesíláme nejlepší řešení
      */
-    if (my_rank == 0) {
+    if (my_rank == root) {
         int i = 0;
         for (i = 1; i < processSum; i++) {
             int bestColorsReceivedPom = 9999;
@@ -250,14 +252,8 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
         }
     }
 
-    // TODO: Ulozit nejlepsi reseni
-    // TODO: Otestovat zda nebyl ukoncen algoritmus (globalni promenna?)
-    //       Pokud Ano, pak breaknout, pokud ne pak dalsi ToDo
-    // TODO: Poslat pozadavek na praci nahodnemu procesoru + zvysovat citac
-
     free(diag);
 
-    // TODO: Odeslat nejlepsi nalezene reseni
 }
 
 /*
@@ -273,13 +269,12 @@ void askForJob(int pocetVrcholu, Stack* s) {
     for (i = 0; i < processSum; i++) {
         if (i != my_rank) {
 
-            MPI_Request request;
-            MPI_Isend(&nothing, 1, MPI_INT, i, MESSAGE_JOB_REQUIRE, MPI_COMM_WORLD, &request);
+            MPI_Send(&nothing, 1, MPI_INT, i, MESSAGE_JOB_REQUIRE, MPI_COMM_WORLD);
             //printf("Pozadal jsem o praci (Kdo: %d -> Koho: %d)\n", my_rank, i);
 
             int flag = 0;
+            int citac = 0;
             while (flag == 0) {
-
                 MPI_Iprobe(i, MESSAGE_JOB_REQUIRE_ANSWER, MPI_COMM_WORLD, &flag, &status);
 
                 if (flag) {
@@ -299,6 +294,7 @@ void askForJob(int pocetVrcholu, Stack* s) {
                 if (algoritmusUkoncen == 1) {
                     break;
                 }
+
             }
 
             if (lenght > 0) {
@@ -375,29 +371,15 @@ void askForJob(int pocetVrcholu, Stack* s) {
 
         //Přijme vrchol zásobníku
         MPI_Recv(stackArray, zasobnikSize, MPI_INT, i, MESSAGE_JOB_REQUIRE_STACK_ARRAY, MPI_COMM_WORLD, &status);
-        if (vrcholZasobniku > 0) {
-            //printf("XXXXXXXXXPrvek (5) zásobníku: %d\n", stackArray[0]);
-        }
 
-        //printf("XXXXXXXXXZásobník: %d\n", stackArray[1]);
 
         memoryFreeStack(s); //uvolníme předchozí zásobník
         s->array = stackArray;
-        //printf("XXXXXXXXXPrvek zásobníku: %d\n", s->array[0]);
-        //printf("XXXXXXXXXnastavil jsem stack array.\n");
         s->size = zasobnikSize;
-        //printf("XXXXXXXXXnastavil jsem velikost.\n");
         s->top = vrcholZasobniku;
-        //printf("XXXXXXXXXNastavil jsem vrchol.\n");
 
         //printf("Před přijetím diagonály.\n");
         MPI_Recv(diag, pocetVrcholu, MPI_INT, i, MESSAGE_JOB_REQUIRE_DIAG, MPI_COMM_WORLD, &status);
-        /*
-                int xk=0;
-                for(xk=0; xk < pocetVrcholu; xk++){
-                    printf("DIAGONALA[%d]: %d\n", xk, diag[xk]);
-                }
-         */
 
         my_color = PESEK_BLACK;
 
@@ -408,6 +390,7 @@ void askForJob(int pocetVrcholu, Stack* s) {
  * Odpovíme na případný požadavek na práci
  */
 void answerJobRequests(Stack* s, int pocetVrcholu) {
+    MPI_Request request;
 
     int source;
     int flag;
@@ -455,7 +438,10 @@ void answerJobRequests(Stack* s, int pocetVrcholu) {
                         MPI_Send(&pocetBarev, 1, MPI_INT, source, MESSAGE_JOB_REQUIRE_COLORS, MPI_COMM_WORLD);
                         MPI_Send(&sizeOfPocetPrvku, 1, MPI_INT, source, MESSAGE_JOB_REQUIRE_ITEMS, MPI_COMM_WORLD);
                         //printf("Jsem procesor %d a odesilam konfiguraci %d prosesoru %d.\n", my_rank, odesilanaKonfigurace, source);
-                        MPI_Send(array, (sizeOfPocetPrvku * sizeof (Prvek)), MPI_BYTE, source, MESSAGE_JOB_REQUIRE_CONFIGURATION_ARRAY, MPI_COMM_WORLD);
+                        MPI_Isend(array, (sizeOfPocetPrvku * sizeof (Prvek)), MPI_BYTE, source, MESSAGE_JOB_REQUIRE_CONFIGURATION_ARRAY, MPI_COMM_WORLD, &request);
+                        do {
+                            MPI_Test(&request, &flag, &status);
+                        } while (!flag);
                     }
 
                     int zasobnikTop;
@@ -468,9 +454,15 @@ void answerJobRequests(Stack* s, int pocetVrcholu) {
 
                     MPI_Send(&zasobnikSize, 1, MPI_INT, source, MESSAGE_JOB_REQUIRE_STACK_SIZE, MPI_COMM_WORLD);
                     MPI_Send(&zasobnikTop, 1, MPI_INT, source, MESSAGE_JOB_REQUIRE_STACK_TOP, MPI_COMM_WORLD);
-                    MPI_Send(zasobnikArray, zasobnikSize, MPI_INT, source, MESSAGE_JOB_REQUIRE_STACK_ARRAY, MPI_COMM_WORLD);
+                    MPI_Isend(zasobnikArray, zasobnikSize, MPI_INT, source, MESSAGE_JOB_REQUIRE_STACK_ARRAY, MPI_COMM_WORLD, &request);
+                    do {
+                        MPI_Test(&request, &flag, &status);
+                    } while (!flag);
 
-                    MPI_Send(diag, pocetVrcholu, MPI_INT, source, MESSAGE_JOB_REQUIRE_DIAG, MPI_COMM_WORLD);
+                    MPI_Isend(diag, pocetVrcholu, MPI_INT, source, MESSAGE_JOB_REQUIRE_DIAG, MPI_COMM_WORLD, &request);
+                    do {
+                        MPI_Test(&request, &flag, &status);
+                    } while (!flag);
 
                     if (source < my_rank) {
                         my_color = PESEK_BROWN;
