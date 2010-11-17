@@ -121,16 +121,16 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
         //printf("Pocet prvku v zasobniku: %i\n", countNodes(s));
 
 
-        printf("\nJsem procesor %d popuju z vrcholu coz je: %d\n", my_rank, s->top);
-        printf("\nA na topu mam: %d\n", s->array[s->top - 1]);
-        printf("\nPricemz velikost zasobniku je: %d\n", s->size);
+        //printf("\nJsem procesor %d popuju z vrcholu coz je: %d\n", my_rank, s->top);
+        //printf("\nA na topu mam: %d\n", s->array[s->top - 1]);
+        //printf("\nPricemz velikost zasobniku je: %d\n", s->size);
 
         aktualniVrchol = pop(s);
 
-        printf("\nPop se povedl - popnul jsem: %d\n", aktualniVrchol);
+        //printf("\nPop se povedl - popnul jsem: %d\n", aktualniVrchol);
         //printf("Vrchol %i vybran ze zasobniku\n", aktualniVrchol);
 
-        printf("\nPocet vrcholu: %d\n", pocetVrcholu);
+        //printf("\nPocet vrcholu: %d\n", pocetVrcholu);
 
         coloring(aktualniVrchol, pocetVrcholu);
 
@@ -226,7 +226,7 @@ void askForJob(int pocetVrcholu, Stack* s) {
 
         poleKonfiguraci = malloc(lenght * sizeof (Config));
 
-        printf("Jsem procesor %d a dostal jsem %d konfiguraci.\n", my_rank, lenght);
+        //printf("Jsem procesor %d a dostal jsem %d konfiguraci.\n", my_rank, lenght);
 
         //TODO: Nastavit hodnotu proměnné do mbg.c
         int pocetPrvku = 0;
@@ -276,7 +276,7 @@ void askForJob(int pocetVrcholu, Stack* s) {
 
         //Přijme vrchol zásobníku
         MPI_Recv(&vrcholZasobniku, 1, MPI_INT, i, MESSAGE_JOB_REQUIRE_STACK_TOP, MPI_COMM_WORLD, &status);
-        printf("XXXXXXXXXVrchol zásobníku: %d\n", vrcholZasobniku);
+        //printf("XXXXXXXXXVrchol zásobníku: %d\n", vrcholZasobniku);
 
         int* stackArray = malloc(zasobnikSize * sizeof (int));
 
@@ -289,12 +289,21 @@ void askForJob(int pocetVrcholu, Stack* s) {
         //printf("XXXXXXXXXZásobník: %d\n", stackArray[1]);
         memoryFreeStack(s); //uvolníme předchozí zásobník
         s->array = stackArray;
-        printf("XXXXXXXXXPrvek zásobníku: %d\n", s->array[0]);
-        printf("XXXXXXXXXnastavil jsem stack array.\n");
+        //printf("XXXXXXXXXPrvek zásobníku: %d\n", s->array[0]);
+        //printf("XXXXXXXXXnastavil jsem stack array.\n");
         s->size = zasobnikSize;
-        printf("XXXXXXXXXnastavil jsem velikost.\n");
+        //printf("XXXXXXXXXnastavil jsem velikost.\n");
         s->top = vrcholZasobniku;
-        printf("XXXXXXXXXNastavil jsem vrchol.\n");
+        //printf("XXXXXXXXXNastavil jsem vrchol.\n");
+
+        //printf("Před přijetím diagonály.\n");
+        MPI_Recv(diag, pocetVrcholu, MPI_INT, i, MESSAGE_JOB_REQUIRE_DIAG, MPI_COMM_WORLD, &status);
+/*
+        int xk=0;
+        for(xk=0; xk < pocetVrcholu; xk++){
+            printf("DIAGONALA[%d]: %d\n", xk, diag[xk]);
+        }
+*/
 
 
     }

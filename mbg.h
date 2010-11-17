@@ -36,5 +36,7 @@ void setConfiguration(Config* pole, int pocetKonfiguraciArg, int pocetPrvkuArg);
 int getVelikostPoleKonfiguraci();
 void setVelikostPoleKonfiguraci(int size);
 
+void zvetsiPole();
+
 #endif	/* MBG_H */
 
