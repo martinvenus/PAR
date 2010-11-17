@@ -35,7 +35,7 @@ Prvek* getKonfigurace(int konfigurace);
 void setConfiguration(Config* pole, int pocetKonfiguraciArg, int pocetPrvkuArg);
 int getVelikostPoleKonfiguraci();
 void setVelikostPoleKonfiguraci(int size);
-
+int getBestColors();
 void zvetsiPole();
 
 #endif	/* MBG_H */

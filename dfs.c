@@ -87,6 +87,7 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
     int x = 0;
     int sousede = 0;
     int aktualniVrchol;
+    int bestColors = -1;
 
     diag = malloc(pocetVrcholu * sizeof (int));
     int k = 0;
@@ -152,15 +153,40 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
         // Pokud mam prazdny zasobnik - vytvoril jsem kompletni konfiguraci
         if (isEmpty(s)) {
 
+            printf("Procesor %d hlasi: Dosla mi prace\n", my_rank);
 
+            findBestColouring();
+            if ((bestColors > getBestColors()) || (bestColors == -1)) {
+                bestColors = getBestColors();
+                setBestSolutionToMatrix(pocetVrcholu);
+            }
 
+            int pokusy = 0;
+            int finished = 0;
 
             while (1) {
                 answerJobRequests(s, pocetVrcholu);
+                askForJob(pocetVrcholu, s);
+                if (!isEmpty(s)) {
+                    printf("Procesor %d hlasi: Dostal jsem praci!!\n", my_rank);
+                    break;
+                }
+//                if (my_rank == 0) {
+                    pokusy++;
+                    if (pokusy % (processSum*10) == 0) {
+                        //posli peska
+                        finished = 1;
+                        break;
+                    }
+  //              }
+
+            }
+
+            if (finished == 1) {
+                break;
             }
 
 
-            break;
             // TODO: Ulozit nejlepsi reseni
             // TODO: Otestovat zda nebyl ukoncen algoritmus (globalni promenna?)
             //       Pokud Ano, pak breaknout, pokud ne pak dalsi ToDo
@@ -297,12 +323,12 @@ void askForJob(int pocetVrcholu, Stack* s) {
 
         //printf("Před přijetím diagonály.\n");
         MPI_Recv(diag, pocetVrcholu, MPI_INT, i, MESSAGE_JOB_REQUIRE_DIAG, MPI_COMM_WORLD, &status);
-/*
-        int xk=0;
-        for(xk=0; xk < pocetVrcholu; xk++){
-            printf("DIAGONALA[%d]: %d\n", xk, diag[xk]);
-        }
-*/
+        /*
+                int xk=0;
+                for(xk=0; xk < pocetVrcholu; xk++){
+                    printf("DIAGONALA[%d]: %d\n", xk, diag[xk]);
+                }
+         */
 
 
     }

@@ -154,7 +154,6 @@ void addVrchol(int konfigurace, int vrchol, int barva, int pocetVrcholu) {
         if (newConf >= velikostPole){
             zvetsiPole();
         }
-        printf("ID nove konfigurace %d, velikost pole: %d\n", newConf, velikostPole);
 
         //printf("Druha vetev pridavani. Pridano konfiguraci: %i\n", pridanoKonfiguraci);
         Prvek* newArray;
@@ -272,7 +271,7 @@ void setBestSolutionToMatrix(int pocetVrcholu) {
 }
 
 void printBestSolution(int pocetVrcholu) {
-    printf("Pocet pouzitych barev: %i\n", countColorBestSolution);
+    printf("Pocet pouzitych barev: %i procesorem %d\n", countColorBestSolution, my_rank);
 
     int i = 0;
     int j = 0;
@@ -287,6 +286,10 @@ void printBestSolution(int pocetVrcholu) {
 
 int getPocetKonfiguraci() {
     return pocetKonfiguraci;
+}
+
+int getBestColors(){
+    return countColorBestSolution;
 }
 
 void setPocetKonfiguraci(int pocet) {
