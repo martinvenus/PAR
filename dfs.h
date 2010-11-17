@@ -27,6 +27,9 @@ void DFS_analyse(Stack *s, int** m, int vrcholy);
 void answerJobRequests(Stack* s, int pocetVrcholu);
 void askForJob(int pocetVrcholu, Stack* s);
 
+void pesekOstatni();
+void pesekRoot();
+
 
 
 #endif	/* DFS_H */

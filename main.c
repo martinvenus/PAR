@@ -21,6 +21,7 @@ int root = 0;
 int processSum = 0;
 
 MPI_Status status;
+MPI_Request requst;
 
 /*
  * Globální proměnné pro práci s grafem
