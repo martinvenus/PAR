@@ -34,5 +34,7 @@ int getPocetPrvku();
 Prvek* getKonfigurace(int konfigurace);
 void setConfiguration(Config* pole, int pocetKonfiguraciArg, int pocetPrvkuArg);
 
+void zvetsiPole();
+
 #endif	/* MBG_H */
 

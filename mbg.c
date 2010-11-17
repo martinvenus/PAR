@@ -12,7 +12,7 @@
 #define	NEW_COLOR -1
 
 //TODO: Upravit na dynamickou relokaci paměti
-int velikostPole = 100000000;
+int velikostPole = 1000;
 int pocetKonfiguraci = 0;
 int pocetPrvku = 0;
 int pridanoKonfiguraci = 0;
@@ -29,7 +29,7 @@ extern int my_rank;
 
 void coloring(int idNovehoVrcholu, int pocetVrcholu) {
 
-    printf("Počet konfigurací: %d na procesoru: %d\n", pocetKonfiguraci, my_rank);
+    printf("Počet konfigurací: %d na procesoru: %d\n, velikost pole: %d", pocetKonfiguraci, my_rank, velikostPole);
 
     //printf("Debug - Obarvuji vrchol %i\n", idNovehoVrcholu);
     
@@ -148,6 +148,13 @@ void addVrchol(int konfigurace, int vrchol, int barva, int pocetVrcholu) {
         int oldConf = konfigurace;
         int newConf = pocetKonfiguraci + pridanoKonfiguraci;
 
+        /*
+         * Zvětšíme pole
+         */
+        if (newConf >= velikostPole){
+            zvetsiPole();
+        }
+
         //printf("Druha vetev pridavani. Pridano konfiguraci: %i\n", pridanoKonfiguraci);
         Prvek* newArray;
         newArray = copyArray(poleKonfiguraci[oldConf].array, pocetVrcholu, pocetPrvku);
@@ -171,6 +178,17 @@ void addVrchol(int konfigurace, int vrchol, int barva, int pocetVrcholu) {
 
     isCurrentConfigurationOver = 1;
 }
+
+void zvetsiPole(){
+        int novaVelikost = 2 * velikostPole;
+        poleKonfiguraci = realloc(poleKonfiguraci, novaVelikost * sizeof (int));
+
+        if (poleKonfiguraci == NULL) {
+            printf("Memory reallocation failed for poleKonfiguraci.\n");
+        } else {
+            velikostPole = novaVelikost;
+        }
+    }
 
 Prvek* copyArray(Prvek* sourceArray, int pocetVrcholu, int pocetPrvku) {
 

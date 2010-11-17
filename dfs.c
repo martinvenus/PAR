@@ -19,8 +19,6 @@ extern int processSum;
 int* diag;
 extern MPI_Status status;
 
-extern int velikostPole;
-
 void push(Stack *s, int value) {
     if (full(s)) {
         int novaVelikost = 2 * s->size;
@@ -218,7 +216,7 @@ void askForJob(int pocetVrcholu, Stack* s) {
         //Inicializace paměti pro konfigurace
         Config* poleKonfiguraci;
 
-        poleKonfiguraci = malloc(velikostPole * sizeof (Config));
+        poleKonfiguraci = malloc(lenght * sizeof (Config));
 
         //printf("Jsem procesor %d a dostal jsem %d konfiguraci.\n", my_rank, lenght);
 
