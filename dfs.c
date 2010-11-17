@@ -216,7 +216,12 @@ void askForJob(int pocetVrcholu, Stack* s) {
         //Inicializace paměti pro konfigurace
         Config* poleKonfiguraci;
 
-        poleKonfiguraci = malloc(lenght * sizeof (Config));
+        int velikostPoleKonfiguraci = 0;
+        MPI_Recv(&velikostPoleKonfiguraci, 1, MPI_INT, i, MESSAGE_JOB_REQUIRE_CONFIGURATION_ARRAY_SIZE, MPI_COMM_WORLD, &status);
+
+        poleKonfiguraci = malloc(velikostPoleKonfiguraci * sizeof (Config));
+
+        setVelikostPoleKonfiguraci(setVelikostPoleKonfiguraci);
 
         //printf("Jsem procesor %d a dostal jsem %d konfiguraci.\n", my_rank, lenght);
 
