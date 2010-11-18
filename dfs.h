@@ -30,6 +30,10 @@ void askForJob(int pocetVrcholu, Stack* s);
 void pesekOstatni();
 void pesekRoot();
 
+void verifyLock();
+void sendLock();
+void releaseLock();
+
 
 
 #endif	/* DFS_H */

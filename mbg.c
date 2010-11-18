@@ -29,6 +29,8 @@ extern int my_rank;
 
 void coloring(int idNovehoVrcholu, int pocetVrcholu) {
 
+    verifyLock();
+
     //printf("Počet konfigurací: %d na procesoru: %d\n, velikost pole: %d", pocetKonfiguraci, my_rank, velikostPole);
 
     //printf("Debug - Obarvuji vrchol %i\n", idNovehoVrcholu);

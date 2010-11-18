@@ -30,6 +30,9 @@ int pokusyPrijetiPrace = 0;
 int bestColorsReceived = 9999;
 int bestColorReceivedProcessor = -1;
 
+int lockP = -1;
+int haveLock = 0;
+
 /*
  Vlozeni dat do zasobniku
  */
@@ -228,12 +231,12 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
 
                 if (algoritmusUkoncen == 0) {
                     // TODO: Ptat se na praci
-                    //askForJob(pocetVrcholu, s);
+                    askForJob(pocetVrcholu, s);
                 }
 
                 // pokud jsme dostali praci, obarvujeme
                 if (!isEmpty(s)) {
-                    //printf("Procesor %d dostal praci.\n", my_rank);
+                    printf("Procesor %d dostal praci.\n", my_rank);
                     //answerJobRequests(s,pocetVrcholu);
                     break;
                 }
@@ -299,6 +302,12 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
  * Žádání o práci probíhá postupně od procesoru s nejnižším ID k nejvyššímu
  */
 void askForJob(int pocetVrcholu, Stack* s) {
+    sendLock();
+    if (haveLock != 1){
+        return;
+    }
+
+    printf("Vstupuji do kritické sekce. Procesor: %d\n");
 
     int lenght;
     int nothing = 1;
@@ -424,6 +433,7 @@ void askForJob(int pocetVrcholu, Stack* s) {
         my_color = PESEK_BLACK;
 
     }
+
 }
 
 /*
@@ -505,6 +515,7 @@ void answerJobRequests(Stack* s, int pocetVrcholu) {
                         MPI_Test(&request, &flag, &status);
                     } while (!flag);
 
+
                     MPI_Isend(diag, pocetVrcholu, MPI_INT, source, MESSAGE_JOB_REQUIRE_DIAG, MPI_COMM_WORLD, &request);
                     do {
                         MPI_Test(&request, &flag, &status);
@@ -534,6 +545,8 @@ void answerJobRequests(Stack* s, int pocetVrcholu) {
             }
         }
     }
+
+        releaseLock();
 }
 
 /*
@@ -633,5 +646,136 @@ void pesekRoot() {
 
             }
         }
+    }
+}
+
+void sendLock() {
+    int lock = -2;
+    int flag = 0;
+
+    MPI_Request request;
+
+    int i = 0;
+    for (i = 0; i < processSum; i++) {
+        if (i != my_rank) {
+            MPI_Isend(&my_rank, 1, MPI_INT, i, LOCK_REQUEST, MPI_COMM_WORLD, &request);
+            do {
+                MPI_Test(&request, &flag, &status);
+                verifyLock();
+            } while (!flag);
+
+        }
+    }
+
+    int lockPossible = 1;
+    for (i = 0; i < processSum; i++) {
+        if (i != my_rank) {
+
+            while (flag == 0) {
+                MPI_Iprobe(i, LOCK_REQUEST_ANSWER, MPI_COMM_WORLD, &flag, &status);
+
+                if (flag) {
+                    MPI_Recv(&lock, 1, MPI_INT, i, LOCK_REQUEST_ANSWER, MPI_COMM_WORLD, &status);
+                    verifyLock();
+
+                    if (lock == -1) {
+                        lockPossible = 0;
+                    }
+                }
+            }
+
+        }
+    }
+
+    if (lockPossible = 0) {
+        for (i = 0; i < processSum; i++) {
+            if (i != my_rank) {
+
+                MPI_Isend(&my_rank, 1, MPI_INT, i, LOCK_RELEASE, MPI_COMM_WORLD, &request);
+                do {
+                    MPI_Test(&request, &flag, &status);
+                    verifyLock();
+                } while (!flag);
+
+            }
+        }
+        haveLock = 0;
+    }
+    else {
+        haveLock = 1;
+    }
+
+
+}
+
+void releaseLock() {
+    MPI_Request request;
+    int flag = 0;
+    haveLock = 0;
+
+    int i = 0;
+    for (i = 0; i < processSum; i++) {
+        if (i != my_rank) {
+
+            MPI_Isend(&my_rank, 1, MPI_INT, i, LOCK_RELEASE, MPI_COMM_WORLD, &request);
+            do {
+                MPI_Test(&request, &flag, &status);
+            } while (!flag);
+
+        }
+    }
+}
+
+void verifyLock() {
+    //printf("Lock: %d\n", lockP);
+    MPI_Request request;
+    int flag = 0;
+
+    int lock = -1;
+    int locking = 0;
+
+    int i = 0;
+    for (i = 0; i < processSum; i++) {
+        if (i != my_rank) {
+
+            MPI_Iprobe(i, LOCK_REQUEST, MPI_COMM_WORLD, &flag, &status);
+
+            if (flag) {
+                MPI_Recv(&lock, 1, MPI_INT, i, LOCK_REQUEST, MPI_COMM_WORLD, &status);
+
+                if ((lockP >= 0) || (haveLock == 1)) {
+                    int response = -1;
+                    MPI_Isend(&response, 1, MPI_INT, i, LOCK_RELEASE, MPI_COMM_WORLD, &request);
+                    do {
+                        MPI_Test(&request, &flag, &status);
+                    } while (!flag);
+                } else {
+                    lockP = lock;
+
+                    locking = 1;
+                    int response = 1;
+                    MPI_Isend(&response, 1, MPI_INT, i, LOCK_RELEASE, MPI_COMM_WORLD, &request);
+                    do {
+                        MPI_Test(&request, &flag, &status);
+                    } while (!flag);
+
+                }
+            }
+
+        }
+    }
+
+    for (i = 0; i < processSum; i++) {
+        if (i != my_rank) {
+            MPI_Iprobe(i, LOCK_RELEASE, MPI_COMM_WORLD, &flag, &status);
+
+            if (flag) {
+                MPI_Recv(&lock, 1, MPI_INT, i, LOCK_RELEASE, MPI_COMM_WORLD, &status);
+                lockP = -1;
+            }
+        }
+
+
+
     }
 }
