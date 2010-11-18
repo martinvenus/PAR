@@ -275,7 +275,7 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
             }
         }
 
-        if (bestColorsReceived <= bestColors) {
+        if (bestColorsReceived >= bestColors) {
             printBestSolution(pocetVrcholu);
         }
     } else {
@@ -583,6 +583,11 @@ void pesekOstatni() {
  Funkce pro obsluhu peska na procesoru 0
  */
 void pesekRoot() {
+    if (processSum == 1) {
+        algoritmusUkoncen = 1;
+        return;
+    }
+
     if (my_rank == 0) {
         MPI_Request request;
 

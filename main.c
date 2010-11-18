@@ -53,8 +53,12 @@ int main(int argc, char** argv) {
 
     int pocetVrcholu;
 
+    double t1, t2;
+
+    MPI_Barrier(MPI_COMM_WORLD); /* cekam na spusteni vsech procesu */
 
     if (my_rank == root) {
+        t1 = MPI_Wtime(); /* pocatecni cas */
 
         char inputFile[255] = "";
 
@@ -126,6 +130,16 @@ int main(int argc, char** argv) {
 
     memoryFreeStack(&s);
     memoryFreeConfigurationArray();
+
+
+    MPI_Barrier(MPI_COMM_WORLD);
+
+    if (my_rank == root) {
+        t2 = MPI_Wtime();
+
+        printf("Spotrebovany cas je %f.\n", t2 - t1);
+
+    }
 
     /* shut down MPI */
     MPI_Finalize();
