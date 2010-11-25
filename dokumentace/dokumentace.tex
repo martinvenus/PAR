@@ -1,0 +1,206 @@
+\documentclass[12pt]{article}
+\usepackage{epsf,epic,eepic,eepicemu}
+%\documentstyle[epsf,epic,eepic,eepicemu]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[czech]{babel}     
+\usepackage{ae}
+\usepackage{fancyhdr}
+
+\begin{document}
+%\oddsidemargin=-5mm \evensidemargin=-5mm \marginparwidth=.08in
+%\marginparsep=.01in \marginparpush=5pt \topmargin=-15mm
+%\headheight=12pt \headsep=25pt \footheight=12pt \footskip=30pt
+%\textheight=25cm \textwidth=17cm \columnsep=2mm \columnseprule=1pt
+%\parindent=15pt\parskip=2pt
+
+% ============================ Hlavička dokumentu ==================================================================
+\begin{center}
+\bf Semestrální projekt MI-PAR 2010/2011\\[5mm]
+    Paralelní algoritmus pro řešení problému\\[5mm]
+       Jaroslav Líbal\\
+       Martin Venuš\\[5mm]
+FIT ČVUT\\[2mm]
+magisterské studijum\\[2mm]
+Kolejní 550/2, 160 00 Praha 6\\[2mm]
+29. listopadu 2010
+\end{center}
+
+%\pagestyle{empty} %get rid of header/footer for toc page
+\newpage
+\tableofcontents
+\newpage
+%\pagestyle{fancy}
+
+% ============================ Definice problému a popis sekvenčního algoritmu ==================================================================
+\section{Definice problému a popis sekvenčního algoritmu}
+\textbf{Úloha MBG: minimální obarvení grafu}
+
+\subsection{Vstupní data}
+
+$G(V,E)$ = jednoduchý neorietovaný neohodnocený k-regulární graf o n uzlech a m hranách\\
+$n$ = přirozené číslo představující počet uzlů grafu G, $n \geq 5$
+$k$ = přirozené číslo řádu jednotek představující stupeň uzlu grafu G, $n \geq k \geq 3$; n a k nejsou současně obě liché\\
+\\
+Doporučení pro generování G:\\
+\\
+Použijte generátor grafu s volbou typu grafu "-t REG", který vygeneruje souvislý neorientovaný neohodnocený graf.
+
+
+\subsection{Úkol} 
+
+Nalezněte minimální uzlové obarvení grafu G, či-li zobrazení B: V $\rightarrow$ N takové, že b=$\left|\{B[x]; x\ in\ V\}\right|$ je minimální. Řešení existuje vždy, nemusí být jednoznačné.
+
+\subsection{Výstup algoritmu}
+
+Počet použitých barev a výpis uzlového obarvení $B[1..n]$ grafu G ve formě matice sousednosti (barvy uzlů pište na diagonálu matice).\\
+\\
+TODO: Obrázky\\
+(a) Vstupní graf G(V,E). (b) Obarvení grafu G(V,E) 3 barvami.
+
+\subsection{Sekvenční algoritmus}
+
+Sekvenční algoritmus je typu BB-DFS s omezenou hloubkou prohledávaného prostoru. Cena, kterou minimalizuje, je počet barev b. Mezistav je dán částečným obarvenim. Mezistav či koncový stav je přípustný, jestliže žádné 2 sousední uzly nejsou obarvené stejnou barvou. Návrat v mezistavu provádíme, pokud nelze žádný neobarvený uzel obarvit, aniž by se porušila podminka uzlového barvení.\\
+\\
+Triviální horní mez na $b=k+1$ (každý k-regulární graf lze uzlově obarvit $k+1$ barvami).\\
+Těsná spodní mez na $b=2$. Pokud je G bipartitní, existuje obarvení dvěma barvami.
+
+
+\subsection{Paralelní algoritmus}
+
+Paralelní algoritmus je typu G-PBB-DFS-D. 
+
+\subsection{Výhledově odstranit}
+Popište problém, který váš program řeší. Jako výchozí použijte text
+zadání, který rozšiřte o přesné vymezení všech odchylek, které jste
+vůči zadání během implementace provedli (např.  úpravy heuristické
+funkce, organizace zásobníku, apod.). Zmiňte i případně i takové
+prvky algoritmu, které v zadání nebyly specifikovány, ale které se
+ukázaly jako důležité.  Dále popište vstupy a výstupy algoritmu
+(formát vstupních a výstupních dat). Uveďte tabulku nameřených časů
+sekvenčního algoritmu pro různě velká data.
+
+% ============================ Popis paralelního algoritmu a jeho implementace v MPI ==================================================================
+\section{Popis paralelního algoritmu a jeho implementace v MPI}
+
+Popište paralelní algoritmus, opět vyjděte ze zadání a přesně
+vymezte odchylky, zvláště u algoritmu pro vyvažování zátěže, hledání
+dárce, ci ukončení výpočtu.  Popište a vysvětlete strukturu
+celkového paralelního algoritmu na úrovni procesů v MPI a strukturu
+kódu jednotlivých procesů. Např. jak je naimplementována smyčka pro
+činnost procesů v aktivním stavu i v stavu nečinnosti. Jaké jste
+zvolili konstanty a parametry pro škálování algoritmu. Struktura a
+sémantika příkazové řádky pro spouštění programu.
+
+% ============================ Naměřené výsledky a vyhodnocení ==================================================================
+\section{Naměřené výsledky a vyhodnocení}
+
+Pro měření výsledků byly vygenerovány následující matice:
+\begin{table}[ht]
+\centering
+\begin{tabular}{|l|c|c|c|c|}
+\hline \textbf{Matice} & \textbf{Typ matice} & \textbf{Počet vrcholů} & \textbf{Stupeň vrcholu} \\
+\hline 
+\hline Matice 1 & REG & 42 & 18 \\ 
+\hline Matice 2 & REG & 44 & 29 \\ 
+\hline Matice 3 & REG & 43 & 12 \\ 
+\hline 
+\end{tabular}
+\caption{Popis jednotlivých vygenerovaných matic.}
+\label{matice_popis}	
+\end{table}
+
+REG = k-regularni graf
+
+\subsection{Sekvenční řešení}
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{|l|c|c|c|c|}
+\hline \textbf{Typ matice} & \textbf{čas 1 [s]} & \textbf{čas 2 [s]} & \textbf{čas 3 [s]} & \textbf{prům. čas [s]} \\
+\hline 
+\hline Matice 1 & 364.7 & 364.9 & 365.0 & \textbf{364.86} \\ 
+\hline Matice 2 & 652.3 & 651.5 & 651.4 & \textbf{651.7} \\ 
+\hline Matice 3 & 1184.7 & 1184.0 & 1184.9 & \textbf{1184.53} \\ 
+\hline 
+\end{tabular}
+\caption{Doba běhu sekvenčního algoritmu pro jednotlivé matice.}
+\label{doba_behu_sekvencne}	
+\end{table}
+
+\begin{enumerate}
+\item Zvolte tři instance problému s takovou velikostí vstupních dat, pro které má
+sekvenční algoritmus časovou složitost kolem 5, 10 a 15 minut. Pro
+meření čas potřebný na čtení dat z disku a uložení na disk
+neuvažujte a zakomentujte ladící tisky, logy, zprávy a výstupy.
+\item Měřte paralelní čas při použití $i=2,\cdot,32$ procesorů na sítích Ethernet a InfiniBand.
+%\item Pri mereni kazde instance problemu na dany pocet procesoru spoctete pro vas algoritmus dynamicke delby prace celkovy pocet odeslanych zadosti o praci, prumer na 1 procesor a jejich uspesnost.
+%\item Mereni pro dany pocet procesoru a instanci problemu provedte 3x a pouzijte prumerne hodnoty.
+\item Z naměřených dat sestavte grafy zrychlení $S(n,p)$. Zjistěte, zda a za jakych podmínek
+došlo k superlineárnímu zrychlení a pokuste se je zdůvodnit.
+\item Vyhodnoďte komunikační složitost dynamického vyvažování zátěže a posuďte
+vhodnost vámi implementovaného algoritmu pro hledání dárce a dělení
+zásobníku pri řešení vašeho problému. Posuďte efektivnost a
+škálovatelnost algoritmu. Popište nedostatky vaší implementace a
+navrhněte zlepšení.
+\item Empiricky stanovte
+granularitu vaší implementace, tj., stupeň paralelismu pro danou
+velikost řešeného problému. Stanovte kritéria pro stanovení mezí, za
+kterými již není učinné rozkládat výpočet na menší procesy, protože
+by komunikační náklady prevážily urychlení paralelním výpočtem.
+
+\end{enumerate}
+
+% ============================ Závěr ==================================================================
+\section{Závěr}
+
+Celkové zhodnocení semestrální práce a zkušenosti získaných během
+semestru.
+
+% ============================ Definice problému a popis sekvenčního algoritmu ==================================================================
+\section{Literatura}
+
+\appendix
+
+\section{Návod pro vkládání grafů a obrázků do Latexu}
+
+Nejjednodušší způsob vytvoření obrázku je použít vektorový grafický
+editor (např. xfig nebo jfig), ze kterého lze exportovat buď
+\begin{itemize}
+\item postscript formáty (ps nebo eps formát) nebo
+\item latex formáty (v pořadí prostý latex, latex s macry epic, eepic, eepicemu). Uvedené pořadí odpovídá růstu
+komplikovanosti obrázků který formát podporuje (prostá latex macra
+umožnují pouze jednoduché, epic makra něco mezi, je třeba
+vyzkoušet).
+
+\end{itemize}
+Následující příklady platí pro všechny případy.
+
+Obrázek v postscriptu, vycentrovaný a na celou šířku stránky, s
+popisem a číslem. Všimnete si, jak řídit velikost obrazku.
+
+Obrázek pouze vložený mezi řádky textu, bez popisu a číslování.\\
+
+Latexovské obrázky maji přípony *.latex, *.epic, *.eepic, a
+*.eepicemu, respective.
+\begin{figure}[ht]
+\begin{center}
+\end{center}
+\caption{Popis vašeho obrázku} \label{l1}
+\end{figure}
+
+bez čísla a popisu.
+
+Takhle jednoduše můžete poskládat obrázky vedle sebe.
+
+Řídit velikost latexovskych obrázků lze příkazem
+\begin{verbatim}
+\setlength{\unitlength}{0.1mm}
+\end{verbatim}
+které mění měřítko rastru obrázku, Tyto příkazy je ale současně
+nutné vyhodit ze souboru, který xfig vygeneroval.
+
+Pro vytváření grafu lze použít program gnuplot, který umí generovat
+postscriptovy soubor, ktery vložíte do Latexu výše uvedeným
+způsobem.
+
+\end{document}
