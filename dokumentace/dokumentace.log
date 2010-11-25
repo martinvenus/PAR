@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2010.10.19)  25 NOV 2010 13:16
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2010.10.19)  25 NOV 2010 17:23
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -388,55 +388,60 @@ Underfull \hbox (badness 10000) in paragraph at lines 59--63
  []
 
 [3] [4]
-Overfull \hbox (10.37593pt too wide) in paragraph at lines 142--147
+Overfull \hbox (25.74837pt too wide) in paragraph at lines 130--158
+ [][] 
+ []
+
+
+Overfull \hbox (10.37593pt too wide) in paragraph at lines 177--182
 []\T1/aer/m/n/12 Empiricky stanovte gran-u-lar-itu va²í im-ple-men-tace, tj., s
 tu-pe¬ par-alelismu
  []
 
 
-Overfull \hbox (12.55992pt too wide) in paragraph at lines 142--147
+Overfull \hbox (12.55992pt too wide) in paragraph at lines 177--182
 \T1/aer/m/n/12 pro-toºe by ko-mu-nika£ní nák-lady pre-váºily urych-lení par-ale
 l-ním výpo£tem. 
  []
 
-
-Overfull \hbox (1.67752pt too wide) in paragraph at lines 153--155
+[5]
+Overfull \hbox (1.67752pt too wide) in paragraph at lines 188--190
 \T1/aer/m/n/12 Celkové zhod-no-cení semestrální práce a zku²enosti získaných b¥
 hem semestru. 
  []
 
-[5]
-LaTeX Font Info:    Try loading font information for OMS+aer on input line 166.
+[6]
+LaTeX Font Info:    Try loading font information for OMS+aer on input line 201.
 
  (/usr/share/texmf-texlive/tex/latex/ae/omsaer.fd
 File: omsaer.fd 1999/12/27
 )
 LaTeX Font Info:    Font shape `OMS/aer/m/n' in size <12> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 166.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 201.
 
-Underfull \hbox (badness 10000) in paragraph at lines 178--179
+Underfull \hbox (badness 10000) in paragraph at lines 213--214
 
  []
 
-LaTeX Font Info:    Try loading font information for T1+aett on input line 193.
+LaTeX Font Info:    Try loading font information for T1+aett on input line 228.
 
 (/usr/share/texmf-texlive/tex/latex/ae/t1aett.fd
 File: t1aett.fd 1997/11/16 Font definitions for T1/aett.
-) [6] [7] (./dokumentace.aux) ) 
+) [7] (./dokumentace.aux) ) 
 Here is how much of TeX's memory you used:
- 1522 strings out of 495061
- 16452 string characters out of 1182620
- 72031 words of memory out of 3000000
- 4690 multiletter control sequences out of 15000+50000
+ 1523 strings out of 495061
+ 16473 string characters out of 1182620
+ 77031 words of memory out of 3000000
+ 4691 multiletter control sequences out of 15000+50000
  21453 words of font info for 48 fonts, out of 3000000 for 9000
  28 hyphenation exceptions out of 8191
  28i,8n,43p,445b,210s stack positions out of 5000i,500n,10000p,200000b,50000s
-</usr/share/texmf-texlive/fonts/type1/public/ams
-fonts/cm/cmbx12.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cm
-mi12.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr12.pfb></u
-sr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/te
-xmf-texlive/fonts/type1/public/amsfonts/cm/cmtt12.pfb>
-Output written on dokumentace.pdf (7 pages, 79483 bytes).
+</usr/share/texmf-texlive/fonts/type1/public/amsfont
+s/cm/cmbx12.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmmi12
+.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/s
+hare/texmf-texlive/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texmf-
+texlive/fonts/type1/public/amsfonts/cm/cmtt12.pfb>
+Output written on dokumentace.pdf (7 pages, 80894 bytes).
 PDF statistics:
  46 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)

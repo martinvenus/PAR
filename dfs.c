@@ -222,6 +222,7 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
 
             // hledame novou praci
             while (1) {
+                //printf("Hledám novou práci. Procesor: %i\n", my_rank);
 
                 // odpovime na pozadavky na praci (nemame praci)
                 answerJobRequests(s, pocetVrcholu);
@@ -233,7 +234,7 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
 
                 // pokud jsme dostali praci, obarvujeme
                 if (!isEmpty(s)) {
-                    //printf("Procesor %d dostal praci.\n", my_rank);
+                    printf("Procesor %d dostal praci.\n", my_rank);
                     //answerJobRequests(s,pocetVrcholu);
                     break;
                 }
@@ -260,14 +261,15 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
             int bestColorsReceivedPom = 9999;
             MPI_Recv(&bestColorsReceivedPom, 1, MPI_INT, i, MESSAGE_FINISH_BEST_COLORS, MPI_COMM_WORLD, &status);
 
-            if (bestColorsReceivedPom < bestColorsReceived) {
+            if ((bestColorsReceivedPom < bestColorsReceived) && (bestColorsReceivedPom > 0)) {
                 bestColorsReceived = bestColorsReceivedPom;
                 bestColorReceivedProcessor = i;
             }
+        }
 
-            //printf("Nejmensi pocet barev: %d na procesoru: %d", bestColorsReceived, bestColorReceivedProcessor);
-
-            if (bestColorsReceived < bestColors) {
+        //printf("Nejmensi pocet barev: %d na procesoru: %d", bestColorsReceived, bestColorReceivedProcessor);
+        for (i = 1; i < processSum; i++) {
+            if (bestColorsReceived >= bestColors) {
                 int best = 0;
                 MPI_Send(&best, 1, MPI_INT, i, MESSAGE_FINISH_BEST, MPI_COMM_WORLD);
             } else {
@@ -278,6 +280,7 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
         if (bestColorsReceived >= bestColors) {
             printBestSolution(pocetVrcholu);
         }
+
     } else {
         MPI_Send(&bestColors, 1, MPI_INT, 0, MESSAGE_FINISH_BEST_COLORS, MPI_COMM_WORLD);
 
@@ -299,7 +302,6 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
  * Žádání o práci probíhá postupně od procesoru s nejnižším ID k nejvyššímu
  */
 void askForJob(int pocetVrcholu, Stack* s) {
-
     int lenght;
     int nothing = 1;
 
