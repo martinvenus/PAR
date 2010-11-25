@@ -267,7 +267,7 @@ void DFS_analyse(Stack *s, int** m, int pocetVrcholu) {
 
             //printf("Nejmensi pocet barev: %d na procesoru: %d", bestColorsReceived, bestColorReceivedProcessor);
 
-            if (bestColorsReceived <= bestColors) {
+            if (bestColorsReceived < bestColors) {
                 int best = 0;
                 MPI_Send(&best, 1, MPI_INT, i, MESSAGE_FINISH_BEST, MPI_COMM_WORLD);
             } else {
