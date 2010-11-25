@@ -37,18 +37,18 @@ Kolejní 550/2, 160 00 Praha 6\\[2mm]
 
 \subsection{Vstupní data}
 
-$G(V,E)$ = jednoduchý neorietovaný neohodnocený k-regulární graf o n uzlech a m hranách\\
+$G(V,E)$ = jednoduchý neorietovaný neohodnocený k-regulární graf o~n uzlech a m hranách\\
 $n$ = přirozené číslo představující počet uzlů grafu G, $n \geq 5$
-$k$ = přirozené číslo řádu jednotek představující stupeň uzlu grafu G, $n \geq k \geq 3$; n a k nejsou současně obě liché\\
+$k$ = přirozené číslo řádu jednotek představující stupeň uzlu grafu G, $n \geq k \geq 3$; n a k~nejsou současně obě liché\\
 \\
 Doporučení pro generování G:\\
 \\
-Použijte generátor grafu s volbou typu grafu "-t REG", který vygeneruje souvislý neorientovaný neohodnocený graf.
+Použijte generátor grafu s~volbou typu grafu "-t REG", který vygeneruje souvislý neorientovaný neohodnocený graf.
 
 
 \subsection{Úkol} 
 
-Nalezněte minimální uzlové obarvení grafu G, či-li zobrazení B: V $\rightarrow$ N takové, že b=$\left|\{B[x]; x\ in\ V\}\right|$ je minimální. Řešení existuje vždy, nemusí být jednoznačné.
+Nalezněte minimální uzlové obarvení grafu G, či-li zobrazení B: V~$\rightarrow$ N takové, že b=$\left|\{B[x]; x\ in\ V\}\right|$ je minimální. Řešení existuje vždy, nemusí být jednoznačné.
 
 \subsection{Výstup algoritmu}
 
@@ -56,7 +56,7 @@ Počet použitých barev a výpis uzlového obarvení $B[1..n]$ grafu G ve form�
 
 \subsection{Sekvenční algoritmus}
 
-Sekvenční algoritmus je typu BB-DFS s omezenou hloubkou prohledávaného prostoru. Cena, kterou minimalizuje, je počet barev b. Mezistav je dán částečným obarvenim. Mezistav či koncový stav je přípustný, jestliže žádné 2 sousední uzly nejsou obarvené stejnou barvou. Návrat v mezistavu provádíme, pokud nelze žádný neobarvený uzel obarvit, aniž by se porušila podminka uzlového barvení.\\
+Sekvenční algoritmus je typu BB-DFS s~omezenou hloubkou prohledávaného prostoru. Cena, kterou minimalizuje, je počet barev b. Mezistav je dán částečným obarvenim. Mezistav či koncový stav je přípustný, jestliže žádné 2 sousední uzly nejsou obarvené stejnou barvou. Návrat v~mezistavu provádíme, pokud nelze žádný neobarvený uzel obarvit, aniž by se porušila podminka uzlového barvení.\\
 \\
 Triviální horní mez na $b=k+1$ (každý k-regulární graf lze uzlově obarvit $k+1$ barvami).\\
 Těsná spodní mez na $b=2$. Pokud je G bipartitní, existuje obarvení dvěma barvami.
@@ -68,23 +68,23 @@ Paralelní algoritmus je typu G-PBB-DFS-D.
 
 \subsection{Výhledově odstranit}
 Popište problém, který váš program řeší. Jako výchozí použijte text
-zadání, který rozšiřte o přesné vymezení všech odchylek, které jste
+zadání, který rozšiřte o~přesné vymezení všech odchylek, které jste
 vůči zadání během implementace provedli (např.  úpravy heuristické
 funkce, organizace zásobníku, apod.). Zmiňte i případně i takové
-prvky algoritmu, které v zadání nebyly specifikovány, ale které se
+prvky algoritmu, které v~zadání nebyly specifikovány, ale které se
 ukázaly jako důležité.  Dále popište vstupy a výstupy algoritmu
 (formát vstupních a výstupních dat). Uveďte tabulku nameřených časů
 sekvenčního algoritmu pro různě velká data.
 
 % ============================ Popis paralelního algoritmu a jeho implementace v MPI ==================================================================
-\section{Popis paralelního algoritmu a jeho implementace v MPI}
+\section{Popis paralelního algoritmu a jeho implementace v~MPI}
 
 Popište paralelní algoritmus, opět vyjděte ze zadání a přesně
-vymezte odchylky, zvláště u algoritmu pro vyvažování zátěže, hledání
+vymezte odchylky, zvláště u~algoritmu pro vyvažování zátěže, hledání
 dárce, ci ukončení výpočtu.  Popište a vysvětlete strukturu
-celkového paralelního algoritmu na úrovni procesů v MPI a strukturu
+celkového paralelního algoritmu na úrovni procesů v~MPI a strukturu
 kódu jednotlivých procesů. Např. jak je naimplementována smyčka pro
-činnost procesů v aktivním stavu i v stavu nečinnosti. Jaké jste
+činnost procesů v~aktivním stavu i v~stavu nečinnosti. Jaké jste
 zvolili konstanty a parametry pro škálování algoritmu. Struktura a
 sémantika příkazové řádky pro spouštění programu.
 
@@ -106,7 +106,7 @@ Pro měření výsledků byly vygenerovány následující matice:
 \label{matice_popis}	
 \end{table}
 
-REG = k-regularni graf
+REG = k-regulární graf
 
 \subsection{Sekvenční řešení}
 
@@ -160,15 +160,15 @@ REG = k-regularni graf
 \end{table}
 
 \begin{enumerate}
-\item Zvolte tři instance problému s takovou velikostí vstupních dat, pro které má
+\item Zvolte tři instance problému s~takovou velikostí vstupních dat, pro které má
 sekvenční algoritmus časovou složitost kolem 5, 10 a 15 minut. Pro
-meření čas potřebný na čtení dat z disku a uložení na disk
+meření čas potřebný na čtení dat z~disku a uložení na disk
 neuvažujte a zakomentujte ladící tisky, logy, zprávy a výstupy.
 \item Měřte paralelní čas při použití $i=2,\cdot,32$ procesorů na sítích Ethernet a InfiniBand.
 %\item Pri mereni kazde instance problemu na dany pocet procesoru spoctete pro vas algoritmus dynamicke delby prace celkovy pocet odeslanych zadosti o praci, prumer na 1 procesor a jejich uspesnost.
 %\item Mereni pro dany pocet procesoru a instanci problemu provedte 3x a pouzijte prumerne hodnoty.
-\item Z naměřených dat sestavte grafy zrychlení $S(n,p)$. Zjistěte, zda a za jakych podmínek
-došlo k superlineárnímu zrychlení a pokuste se je zdůvodnit.
+\item Z~naměřených dat sestavte grafy zrychlení $S(n,p)$. Zjistěte, zda a za jakych podmínek
+došlo k~superlineárnímu zrychlení a pokuste se je zdůvodnit.
 \item Vyhodnoďte komunikační složitost dynamického vyvažování zátěže a posuďte
 vhodnost vámi implementovaného algoritmu pro hledání dárce a dělení
 zásobníku pri řešení vašeho problému. Posuďte efektivnost a
@@ -199,7 +199,7 @@ Nejjednodušší způsob vytvoření obrázku je použít vektorový grafický
 editor (např. xfig nebo jfig), ze kterého lze exportovat buď
 \begin{itemize}
 \item postscript formáty (ps nebo eps formát) nebo
-\item latex formáty (v pořadí prostý latex, latex s macry epic, eepic, eepicemu). Uvedené pořadí odpovídá růstu
+\item latex formáty (v~pořadí prostý latex, latex s~macry epic, eepic, eepicemu). Uvedené pořadí odpovídá růstu
 komplikovanosti obrázků který formát podporuje (prostá latex macra
 umožnují pouze jednoduché, epic makra něco mezi, je třeba
 vyzkoušet).
@@ -207,8 +207,8 @@ vyzkoušet).
 \end{itemize}
 Následující příklady platí pro všechny případy.
 
-Obrázek v postscriptu, vycentrovaný a na celou šířku stránky, s
-popisem a číslem. Všimnete si, jak řídit velikost obrazku.
+Obrázek v~postscriptu, vycentrovaný a na celou šířku stránky,
+s~popisem a číslem. Všimnete si, jak řídit velikost obrazku.
 
 Obrázek pouze vložený mezi řádky textu, bez popisu a číslování.\\
 

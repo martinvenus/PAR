@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2010.10.19)  25 NOV 2010 20:08
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2010.10.19)  25 NOV 2010 20:28
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -429,19 +429,19 @@ LaTeX Font Info:    Try loading font information for T1+aett on input line 228.
 File: t1aett.fd 1997/11/16 Font definitions for T1/aett.
 ) [7] (./dokumentace.aux) ) 
 Here is how much of TeX's memory you used:
- 1523 strings out of 495061
- 16473 string characters out of 1182620
+ 1527 strings out of 495061
+ 16521 string characters out of 1182620
  77031 words of memory out of 3000000
- 4691 multiletter control sequences out of 15000+50000
+ 4695 multiletter control sequences out of 15000+50000
  21453 words of font info for 48 fonts, out of 3000000 for 9000
  28 hyphenation exceptions out of 8191
- 28i,8n,43p,445b,210s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 28i,8n,43p,453b,210s stack positions out of 5000i,500n,10000p,200000b,50000s
 </usr/share/texmf-texlive/fonts/type1/public/amsfont
 s/cm/cmbx12.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmmi12
 .pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/s
 hare/texmf-texlive/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texmf-
 texlive/fonts/type1/public/amsfonts/cm/cmtt12.pfb>
-Output written on dokumentace.pdf (7 pages, 80925 bytes).
+Output written on dokumentace.pdf (7 pages, 80952 bytes).
 PDF statistics:
  46 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
