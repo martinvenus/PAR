@@ -1,6 +1,10 @@
 build/
 dist/
 nbproject/
+dokumentace/dokumentace.aux
+dokumentace/dokumentace.log
+dokumentace/dokumentace.pdf
+dokumentace/dokumentace.toc
 Makefile
 dokumentace.log
 dokumentace.pdf
