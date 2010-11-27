@@ -1,0 +1,7 @@
+set terminal latex
+set output "graph3.tex"
+set title  "Paralelní zrychlení - matice 3"
+set xlabel "počet procesorů"
+set ylabel "\\rotatebox{90}{paralelní zrychlení}"
+set style data linespoint
+plot "graph3.dat" using 1:4 t "Ethernet", "" using 1:5 t "Infiniband"
