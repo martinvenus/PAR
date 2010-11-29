@@ -6,6 +6,14 @@
 \usepackage{ae}
 \usepackage{fancyhdr}
 
+\usepackage[dvipdfm]{graphicx}
+\author{Martin Venuš, Jaroslav Líbal}
+
+\graphicspath{{img/}}
+
+\usepackage[dvipdfm,unicode,colorlinks]{hyperref}
+\hypersetup{bookmarksopen=false,hypertexnames=false, anchorcolor=black, citecolor=black, filecolor=black, linkcolor=black, menucolor=black, urlcolor=blue, pdfauthor={Martin Venuš, Jaroslav Líbal}, pdftitle={Závěrečná zpráva - semestrální projekt MI-PAR}}
+
 \begin{document}
 %\oddsidemargin=-5mm \evensidemargin=-5mm \marginparwidth=.08in
 %\marginparsep=.01in \marginparpush=5pt \topmargin=-15mm
@@ -32,7 +40,7 @@ Kolejní 550/2, 160 00 Praha 6\\[2mm]
 %\pagestyle{fancy}
 
 % ============================ Definice problému a popis sekvenčního algoritmu ==================================================================
-\section{Definice problému a popis sekvenčního algoritmu}
+\section{Zadání úlohy}
 \textbf{Úloha MBG: minimální obarvení grafu}
 
 \subsection{Vstupní data}
@@ -66,7 +74,10 @@ Těsná spodní mez na $b=2$. Pokud je G bipartitní, existuje obarvení dvěma 
 
 Paralelní algoritmus je typu G-PBB-DFS-D. 
 
-\subsection{Výhledově odstranit}
+% ============================ Implementace ==================================================================
+\section{Implementace}
+
+\subsection{Sekvenční algoritmus}
 Popište problém, který váš program řeší. Jako výchozí použijte text
 zadání, který rozšiřte o~přesné vymezení všech odchylek, které jste
 vůči zadání během implementace provedli (např.  úpravy heuristické
@@ -76,8 +87,8 @@ ukázaly jako důležité.  Dále popište vstupy a výstupy algoritmu
 (formát vstupních a výstupních dat). Uveďte tabulku nameřených časů
 sekvenčního algoritmu pro různě velká data.
 
-% ============================ Popis paralelního algoritmu a jeho implementace v MPI ==================================================================
-\section{Popis paralelního algoritmu a jeho implementace v~MPI}
+% ============================ Paralelní algoritmus ==================================================================
+\subsection{Paralelní algroritmus}
 
 Popište paralelní algoritmus, opět vyjděte ze zadání a přesně
 vymezte odchylky, zvláště u~algoritmu pro vyvažování zátěže, hledání
@@ -91,6 +102,30 @@ sémantika příkazové řádky pro spouštění programu.
 % ============================ Naměřené výsledky a vyhodnocení ==================================================================
 \section{Naměřené výsledky a vyhodnocení}
 
+\subsection{Zadání měření}
+\begin{enumerate}
+\item Zvolte tři instance problému s~takovou velikostí vstupních dat, pro které má
+sekvenční algoritmus časovou složitost kolem 5, 10 a 15 minut. Pro
+meření čas potřebný na čtení dat z~disku a uložení na disk
+neuvažujte a zakomentujte ladící tisky, logy, zprávy a výstupy.
+\item Měřte paralelní čas při použití $i=2,\cdot,32$ procesorů na sítích Ethernet a InfiniBand.
+%\item Pri mereni kazde instance problemu na dany pocet procesoru spoctete pro vas algoritmus dynamicke delby prace celkovy pocet odeslanych zadosti o praci, prumer na 1 procesor a jejich uspesnost.
+%\item Mereni pro dany pocet procesoru a instanci problemu provedte 3x a pouzijte prumerne hodnoty.
+\item Z~naměřených dat sestavte grafy zrychlení $S(n,p)$. Zjistěte, zda a za jakych podmínek
+došlo k~superlineárnímu zrychlení a pokuste se je zdůvodnit.
+\item Vyhodnoďte komunikační složitost dynamického vyvažování zátěže a posuďte
+vhodnost vámi implementovaného algoritmu pro hledání dárce a dělení
+zásobníku pri řešení vašeho problému. Posuďte efektivnost a
+škálovatelnost algoritmu. Popište nedostatky vaší implementace a
+navrhněte zlepšení.
+\item Empiricky stanovte
+granularitu vaší implementace, tj., stupeň paralelismu pro danou
+velikost řešeného problému. Stanovte kritéria pro stanovení mezí, za
+kterými již není učinné rozkládat výpočet na menší procesy, protože
+by komunikační náklady prevážily urychlení paralelním výpočtem.
+\end{enumerate}
+
+\subsection{Matice pro měření}
 Pro měření výsledků byly vygenerovány následující matice:
 \begin{table}[ht]
 \centering
@@ -116,7 +151,7 @@ REG = k-regulární graf
 \hline \textbf{Typ matice} & \textbf{čas 1 [s]} & \textbf{čas 2 [s]} & \textbf{čas 3 [s]} & \textbf{prům. čas [s]} \\
 \hline 
 \hline Matice 1 & 364.7 & 364.9 & 365.0 & \textbf{364.86} \\ 
-\hline Matice 2 & 652.3 & 651.5 & 651.4 & \textbf{651.7} \\ 
+\hline Matice 2 & 652.3 & 651.5 & 651.4 & \textbf{651.70} \\ 
 \hline Matice 3 & 1184.7 & 1184.0 & 1184.9 & \textbf{1184.53} \\ 
 \hline 
 \end{tabular}
@@ -124,6 +159,7 @@ REG = k-regulární graf
 \label{doba_behu_sekvencne}	
 \end{table}
 
+%\newpage
 \subsection{Paralelní řešení}
 \begin{table}[ht]
 \centering
@@ -150,7 +186,7 @@ REG = k-regulární graf
 \hline Matice 2 & 16 & 0.590 & 0.398 \\ 
 \hline Matice 3 & 16 & 0.326 & 0.515 \\ 
 \hline 
-\hline Matice 1 & 24 & 3.584 & 0.757 \\ 
+\hline Matice 1 & 24 & 1.146 & 0.757 \\ 
 \hline Matice 2 & 24 & 0.368 & 0.853 \\ 
 \hline Matice 3 & 24 & 0.752 & 0.862 \\ 
 \hline 
@@ -159,28 +195,18 @@ REG = k-regulární graf
 \label{doba_behu_paralelne}	
 \end{table}
 
-\begin{enumerate}
-\item Zvolte tři instance problému s~takovou velikostí vstupních dat, pro které má
-sekvenční algoritmus časovou složitost kolem 5, 10 a 15 minut. Pro
-meření čas potřebný na čtení dat z~disku a uložení na disk
-neuvažujte a zakomentujte ladící tisky, logy, zprávy a výstupy.
-\item Měřte paralelní čas při použití $i=2,\cdot,32$ procesorů na sítích Ethernet a InfiniBand.
-%\item Pri mereni kazde instance problemu na dany pocet procesoru spoctete pro vas algoritmus dynamicke delby prace celkovy pocet odeslanych zadosti o praci, prumer na 1 procesor a jejich uspesnost.
-%\item Mereni pro dany pocet procesoru a instanci problemu provedte 3x a pouzijte prumerne hodnoty.
-\item Z~naměřených dat sestavte grafy zrychlení $S(n,p)$. Zjistěte, zda a za jakych podmínek
-došlo k~superlineárnímu zrychlení a pokuste se je zdůvodnit.
-\item Vyhodnoďte komunikační složitost dynamického vyvažování zátěže a posuďte
-vhodnost vámi implementovaného algoritmu pro hledání dárce a dělení
-zásobníku pri řešení vašeho problému. Posuďte efektivnost a
-škálovatelnost algoritmu. Popište nedostatky vaší implementace a
-navrhněte zlepšení.
-\item Empiricky stanovte
-granularitu vaší implementace, tj., stupeň paralelismu pro danou
-velikost řešeného problému. Stanovte kritéria pro stanovení mezí, za
-kterými již není učinné rozkládat výpočet na menší procesy, protože
-by komunikační náklady prevážily urychlení paralelním výpočtem.
 
-\end{enumerate}
+
+
+\subsubsection{Grafy zrychlení paralelního řešení}
+\input{graph1.tex}
+\\
+\input{graph2.tex}
+\\
+\input{graph3.tex}
+
+\subsubsection{Efektivnost algoritmu}
+\subsubsection{Granularita implementace}
 
 % ============================ Závěr ==================================================================
 \section{Závěr}
@@ -189,9 +215,20 @@ Celkové zhodnocení semestrální práce a zkušenosti získaných během
 semestru.
 
 % ============================ Definice problému a popis sekvenčního algoritmu ==================================================================
-\section{Literatura}
-
-\appendix
+%\newpage
+%\begin{thebibliography}{9}
+%
+%\addcontentsline{toc}{chapter}{Literatura}
+%
+%\bibitem{Aulds_Administrace_Linux}
+%{\em TVRDÍK, P.}
+%       {\bf Parallel Algorithms and Computing}\\
+%       Vydavatelství ČVUT, 2. vydání. Duben 2009
+%       
+%\end{thebibliography}
+%\newpage
+%
+%\appendix
 
 \section{Návod pro vkládání grafů a obrázků do Latexu}
 
