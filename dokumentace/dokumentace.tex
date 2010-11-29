@@ -101,7 +101,7 @@ Proces pracoval 0.000000 sekund.
 
 Před započetím vlastního paralelního výpočtu je procesorem s identifikátorem 0 načtena vstupní matice, která je spolu s informací o počtu jejich vrcholů distribuována pomocí příkazu \textbf{MPI\_Bcast} všem ostatním aktivním procesorům. Každý z procesorů následně provede inicializaci svého lokálního zásobníku a může být zahájen paralelní výpočet.
 
-Výpočet paralelního algoritmu procesorem 0 začíná shodně se sekvenčním řešením - procesor vezme první vrchol vstupní matice, nalezne všechny jeho sousedy a ty vloží do zásobníku. V případě, že již nalezl všechny sousedy pak daný vrchol obarví. Poté co provedl obarvení prvního vrcholu začíná výpočet v hlavní smyčce programu. Ostatní procesory aktivně čekají a ptají se ostatních procesorů na práci.
+Výpočet paralelního algoritmu procesorem P0 začíná shodně se sekvenčním řešením - procesor vezme první vrchol vstupní matice, nalezne všechny jeho sousedy a ty vloží do zásobníku. V případě, že již nalezl všechny sousedy pak daný vrchol obarví. Poté co provedl obarvení prvního vrcholu začíná výpočet v hlavní smyčce programu. Ostatní procesory aktivně čekají a ptají se ostatních procesorů na práci.
 
 \subsubsection{Hlavní smyčka algoritmu}
 
@@ -111,7 +111,33 @@ V okamžiku kdy procesoru dojde práce a tedy rozvinul všechna svá dílčí ř
 
 \subsubsection{Ukončení paralelního výpočtu}
 
-asdsd
+Iniciovat ukončení paralelního výpočtu může pouze procesor P0. V případě, že procesoru P0 došla práce a jeho požadavky na její přidělení byly opakovaně odmítány, nastaví svou barvu na bílou a pošle peška bílé barvy procesoru P1. Jestliže procesor Pi posílá práci procesoru Pj, kde i>j, pak Pi nastaví svou barvu na hnědou. Ve chvíli kdy procesoru Pi dojde práce, kontroluje příchod peška a v případě že jej obdrží, nastaví barvu peška podle své barvy (z hnědé barvy vytvoří černou) a odešle jej po kružnici procesoru Pi+1. Po odeslání peška se z hnědé barvy stává bílá. Pokud P0 obdrží zpět peška bílé barvy, je možné výpočet ukončit (o tomto informuje všechny ostatní procesory vysláním speciální zprávy), jinak ještě některý z procesorů pracuje a je nutné možnost ukončení algoritmu ověřit znovu později.
+
+\subsubsection{Používané konstanty (tagy) ve zprávách}
+\begin{description}
+\item[MESSAGE\_MATRIX] odesílání vstupní matice
+\item[MESSAGE\_JOB\_REQUIRE] žádost o práci
+\item[MESSAGE\_JOB\_REQUIRE\_ANSWER] odpověď na žádost o práci
+\item[MESSAGE\_JOB\_REQUIRE\_COLORS] počet barev posílané konfigurace
+\item[MESSAGE\_JOB\_REQUIRE\_CONFIGURATION\_ARRAY] odesíláme konfiguraci
+\item[MESSAGE\_JOB\_REQUIRE\_ITEMS] 5
+\item[MESSAGE\_JOB\_REQUIRE\_STACK\_SIZE] 6
+\item[MESSAGE\_JOB\_REQUIRE\_STACK\_TOP] 7
+\item[MESSAGE\_JOB\_REQUIRE\_STACK\_ARRAY] 8
+\item[MESSAGE\_JOB\_REQUIRE\_DIAG] 9
+\item[MESSAGE\_JOB\_REQUIRE\_CONFIGURATION\_ARRAY\_SIZE] 10
+\item[PESEK] 11
+\item[PESEK\_FINAL] 12
+\item[MESSAGE\_FINISH\_BEST\_COLORS] 13
+\item[MESSAGE\_FINISH\_BEST] 14
+\end{description}
+
+\subsubsection{Konstanty pro barvy peška a procesoru}
+\begin{description}
+\item[PESEK\_WHITE] bílá
+\item[PESEK\_BLACK] černá
+\item[PESEK\_BROWN] hnědá
+\end{description}
 
 % ============================ Naměřené výsledky a vyhodnocení ==================================================================
 \section{Naměřené výsledky a vyhodnocení}
@@ -263,15 +289,6 @@ Ve všech případech došlo k superlineárnímu zrychlení. Důvodem superline�
 Celkové zhodnocení semestrální práce a zkušenosti získaných během
 semestru.
 
-\section{Příloha 1 - schema hlavní smyčky}
-
-\begin{figure}[ht]
-\centering       
-\includegraphics[scale=0.5]{while.jpg}
-\caption{Hlavní smyčka paralelního algoritmu.}
-\label{hlavniSmycka}
-\end{figure}
-
 
 % ============================ Definice problému a popis sekvenčního algoritmu ==================================================================
 %\newpage
@@ -288,6 +305,15 @@ semestru.
 %\newpage
 
 \appendix
+
+\section{Schema hlavní smyčky}
+
+\begin{figure}[ht]
+\centering       
+\includegraphics[scale=0.5]{while.jpg}
+\caption{Hlavní smyčka paralelního algoritmu.}
+\label{hlavniSmycka}
+\end{figure}
 
 \section{Návod pro vkládání grafů a obrázků do Latexu}
 

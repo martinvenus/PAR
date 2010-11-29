@@ -6,6 +6,12 @@ dokumentace/dokumentace.log
 dokumentace/dokumentace.pdf
 dokumentace/dokumentace.toc
 dokumentace/dokumentace.out
+dokumentace/dokumentace.bbl
+dokumentace/dokumentace.blg
+dokumentace/dokumentace.dvi
+dokumentace/dokumentace.ps
+dokumentace/dokumentace.synctex
+dokumentace/dokumentace.wsp
 Makefile
 dokumentace.log
 dokumentace.pdf
