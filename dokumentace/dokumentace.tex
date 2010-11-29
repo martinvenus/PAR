@@ -84,20 +84,25 @@ vůči zadání během implementace provedli (např.  úpravy heuristické
 funkce, organizace zásobníku, apod.). Zmiňte i případně i takové
 prvky algoritmu, které v~zadání nebyly specifikovány, ale které se
 ukázaly jako důležité.  Dále popište vstupy a výstupy algoritmu
-(formát vstupních a výstupních dat). Uveďte tabulku nameřených časů
+(formát vstupních a výstupních dat). Uveďte tabulku naměřených časů
 sekvenčního algoritmu pro různě velká data.
 
 % ============================ Paralelní algoritmus ==================================================================
-\subsection{Paralelní algroritmus}
+\subsection{Paralelní algoritmus}
 
-Popište paralelní algoritmus, opět vyjděte ze zadání a přesně
-vymezte odchylky, zvláště u~algoritmu pro vyvažování zátěže, hledání
-dárce, ci ukončení výpočtu.  Popište a vysvětlete strukturu
-celkového paralelního algoritmu na úrovni procesů v~MPI a strukturu
-kódu jednotlivých procesů. Např. jak je naimplementována smyčka pro
-činnost procesů v~aktivním stavu i v~stavu nečinnosti. Jaké jste
-zvolili konstanty a parametry pro škálování algoritmu. Struktura a
-sémantika příkazové řádky pro spouštění programu.
+Před započetím vlastního paralelního výpočtu je procesorem s identifikátorem 0 načtena vstupní matice, která je spolu s informací o počtu jejich vrcholů distribuována pomocí příkazu \textbf{MPI\_Bcast} všem ostatním aktivním procesorům. Každý z procesorů následně provede inicializaci svého lokálního zásobníku a může být zahájen paralelní výpočet.
+
+Výpočet paralelního algoritmu procesorem 0 začíná shodně se sekvenčním řešením - procesor vezme první vrchol vstupní matice, nalezne všechny jeho sousedy a ty vloží do zásobníku. V případě, že již nalezl všechny sousedy pak daný vrchol obarví. Poté co provedl obarvení prvního vrcholu začíná výpočet v hlavní smyčce programu. Ostatní procesory aktivně čekají a ptají se ostatních procesorů na práci.
+
+\subsubsection{Hlavní smyčka algoritmu}
+
+Hlavní smyčka programu je naznačena na obrázku v příloze (\ref{hlavniSmycka}). Každý procesor, který má práci, nejprve po obarvení vrcholu obslouží všechny požadavky na práci které obdržel. Pokud již vygeneroval více než jedno dílčí řešení, rozdělí tato řešení na dvě části. První polovinu si ponechá a druhou polovinu odešle spolu se zásobníkem všech doposud objevených vrcholů žádajícímu procesoru. V případě, že již nemá dostatek práce k odeslání odpoví, že nemá žádnou práci k předání a dále pak rozvíjí své poslední dílčí řešení stejným způsobem jako v sekvenčním algoritmu.
+
+V okamžiku kdy procesoru dojde práce a tedy rozvinul všechna svá dílčí řešení, uloží si nejlepší z nich a postupně žádá všechny ostatní procesory o práci dokud ji neobdrží nebo nebyl paralelní výpočet ukončen.
+
+\subsubsection{Ukončení paralelního výpočtu}
+
+asdsd
 
 % ============================ Naměřené výsledky a vyhodnocení ==================================================================
 \section{Naměřené výsledky a vyhodnocení}
@@ -214,6 +219,16 @@ REG = k-regulární graf
 Celkové zhodnocení semestrální práce a zkušenosti získaných během
 semestru.
 
+\section{Příloha 1 - schema hlavní smyčky}
+
+\begin{figure}[ht]
+\centering       
+\includegraphics[scale=0.5]{while.jpg}
+\caption{Hlavní smyčka paralelního algoritmu.}
+\label{hlavniSmycka}
+\end{figure}
+
+
 % ============================ Definice problému a popis sekvenčního algoritmu ==================================================================
 %\newpage
 %\begin{thebibliography}{9}
@@ -249,13 +264,6 @@ s~popisem a číslem. Všimnete si, jak řídit velikost obrazku.
 
 Obrázek pouze vložený mezi řádky textu, bez popisu a číslování.\\
 
-Latexovské obrázky maji přípony *.latex, *.epic, *.eepic, a
-*.eepicemu, respective.
-\begin{figure}[ht]
-\begin{center}
-\end{center}
-\caption{Popis vašeho obrázku} \label{l1}
-\end{figure}
 
 bez čísla a popisu.
 
