@@ -78,14 +78,24 @@ Paralelní algoritmus je typu G-PBB-DFS-D.
 \section{Implementace}
 
 \subsection{Sekvenční algoritmus}
-Popište problém, který váš program řeší. Jako výchozí použijte text
-zadání, který rozšiřte o~přesné vymezení všech odchylek, které jste
-vůči zadání během implementace provedli (např.  úpravy heuristické
-funkce, organizace zásobníku, apod.). Zmiňte i případně i takové
-prvky algoritmu, které v~zadání nebyly specifikovány, ale které se
-ukázaly jako důležité.  Dále popište vstupy a výstupy algoritmu
-(formát vstupních a výstupních dat). Uveďte tabulku nameřených časů
-sekvenčního algoritmu pro různě velká data.
+Sekvenční algoritmus byl implementován přesně dle zadání. Vstupem programu je matice vygenerovaná programem \texttt{generator} s parametrem \texttt{-t REG}. Výstup algoritmu je následující:
+\begin{itemize}
+\item informace o minimálním počtu použitých barev (např. Pocet pouzitych barev: 8)
+\item matice, která má na hlavní diagonále obarvení (číslo barvy) jednotlivých vrcholů
+\item čas běhu algoritmu (např. Proces pracoval 376.300000 sekund.)
+\end{itemize}
+
+Příklad výstupu:
+\begin{verbatim}
+Pocet pouzitych barev: 2
+001
+001
+111
+Proces pracoval 0.000000 sekund.
+\end{verbatim}
+
+Časy běhu algoritmu pro různě velká data jsou uvedeny v tabulce č. \ref{doba_behu_sekvencne}.
+
 
 % ============================ Paralelní algoritmus ==================================================================
 \subsection{Paralelní algroritmus}
@@ -196,14 +206,49 @@ REG = k-regulární graf
 \end{table}
 
 
-
-
 \subsubsection{Grafy zrychlení paralelního řešení}
 \input{graph1.tex}
 \\
 \input{graph2.tex}
 \\
 \input{graph3.tex}
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{|l|c|c|c|c|}
+\hline \textbf{Typ matice} & \textbf{Počet procesorů} & \textbf{Ethernet} & \textbf{Infiniband} \\
+\hline 
+\hline Matice 1 & 2 & 1245.26 & 1539.49 \\ 
+\hline Matice 2 & 2 & 750.74 & 771.37 \\ 
+\hline Matice 3 & 2 & 1010.69 & 1010.69 \\ 
+\hline
+\hline Matice 1 & 4 & 1520.25 & 1122.65 \\ 
+\hline Matice 2 & 4 & 659.78 & 663.38 \\ 
+\hline Matice 3 & 4 & 870.79 & 1007.90 \\ 
+\hline 
+\hline Matice 1 & 8 & 1258.14 & 1436.46 \\ 
+\hline Matice 2 & 8 & 955.13 & 636.75 \\ 
+\hline Matice 3 & 8 & 1016.32 & 613.21 \\ 
+\hline 
+\hline Matice 1 & 12 & 1027.77 & 2049.78 \\ 
+\hline Matice 2 & 12 & 1771.17 & 1098.98 \\ 
+\hline Matice 3 & 12 & 1382.05 & 1593.28 \\ 
+\hline 
+\hline Matice 1 & 16 & 1539.49 & 975.56 \\ 
+\hline Matice 2 & 16 & 618.41 & 916.73 \\ 
+\hline Matice 3 & 16 & 1119.20 & 708.47 \\ 
+\hline 
+\hline Matice 1 & 24 & 318.38 & 481.98 \\ 
+\hline Matice 2 & 24 & 991.47 & 427.74 \\ 
+\hline Matice 3 & 24 & 485.19 & 423.27 \\ 
+\hline 
+\end{tabular}
+\caption{Paralelní zrychlení algoritmu.}
+\label{paralelni_zrychleni}
+\end{table}
+
+
+Ve všech případech došlo k superlineárnímu zrychlení. Důvodem superlineárního zrychlení bude zřejmě problém s odkládáním dat z paměti na pevný disk (swapping) v případě sekvenčního řešení. V případě paralelního řešení (už při použítí dvou procesorů) k tomuto nedochází, protože je k dispozici výrazně více paměti.
 
 \subsubsection{Efektivnost algoritmu}
 \subsubsection{Granularita implementace}
@@ -217,18 +262,18 @@ semestru.
 % ============================ Definice problému a popis sekvenčního algoritmu ==================================================================
 %\newpage
 %\begin{thebibliography}{9}
-%
+
 %\addcontentsline{toc}{chapter}{Literatura}
-%
+
 %\bibitem{Aulds_Administrace_Linux}
 %{\em TVRDÍK, P.}
 %       {\bf Parallel Algorithms and Computing}\\
 %       Vydavatelství ČVUT, 2. vydání. Duben 2009
-%       
+       
 %\end{thebibliography}
 %\newpage
-%
-%\appendix
+
+\appendix
 
 \section{Návod pro vkládání grafů a obrázků do Latexu}
 
