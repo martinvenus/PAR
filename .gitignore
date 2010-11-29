@@ -7,5 +7,7 @@ dokumentace/dokumentace.pdf
 dokumentace/dokumentace.toc
 dokumentace/dokumentace.out
 Makefile
+dokumentace.log
+dokumentace.pdf
 .dep.inc
 !.gitignore
