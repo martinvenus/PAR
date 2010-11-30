@@ -220,48 +220,66 @@ REG = k-regulární graf
 \begin{table}[ht]
 \centering
 \begin{tabular}{|l|c|c|c|c|}
-\hline \textbf{Typ matice} & \textbf{Počet procesorů} & \textbf{Ethernet} & \textbf{Infiniband} \\
+\hline \textbf{Typ matice} & \textbf{Počet procesorů} & \textbf{Ethernet} & \textbf{Infiniband} & * \\
 \hline 
-\hline Matice 1 & 2 & 1245.26 & 1539.49 \\ 
-\hline Matice 2 & 2 & 750.74 & 771.37 \\ 
-\hline Matice 3 & 2 & 1010.69 & 1010.69 \\ 
+\hline Matice 1 & 2 & 1245.26 & 1539.49 & 23.6 \\ 
+\hline Matice 2 & 2 & 750.74 & 771.37 & 2.7 \\ 
+\hline Matice 3 & 2 & 1010.69 & 1010.69 & 0.0 \\ 
 \hline
-\hline Matice 1 & 4 & 1520.25 & 1122.65 \\ 
-\hline Matice 2 & 4 & 659.78 & 663.38 \\ 
-\hline Matice 3 & 4 & 870.79 & 1007.90 \\ 
+\hline Matice 1 & 4 & 1520.25 & 1122.65 & -26.2 \\ 
+\hline Matice 2 & 4 & 659.78 & 663.38 & 0.5 \\ 
+\hline Matice 3 & 4 & 870.79 & 1007.90 & 15.7 \\ 
 \hline 
-\hline Matice 1 & 8 & 1258.14 & 1436.46 \\ 
-\hline Matice 2 & 8 & 955.13 & 636.75 \\ 
-\hline Matice 3 & 8 & 1016.32 & 613.21 \\ 
+\hline Matice 1 & 8 & 1258.14 & 1436.46 & 14.2 \\ 
+\hline Matice 2 & 8 & 955.13 & 636.75 & -33.3 \\ 
+\hline Matice 3 & 8 & 1016.32 & 613.21 & -39.7 \\ 
 \hline 
-\hline Matice 1 & 12 & 1027.77 & 2049.78 \\ 
-\hline Matice 2 & 12 & 1771.17 & 1098.98 \\ 
-\hline Matice 3 & 12 & 1382.05 & 1593.28 \\ 
+\hline Matice 1 & 12 & 1027.77 & 2049.78 & 99.4 \\ 
+\hline Matice 2 & 12 & 1771.17 & 1098.98 & -38.0 \\ 
+\hline Matice 3 & 12 & 1382.05 & 1593.28 & 15.3 \\ 
 \hline 
-\hline Matice 1 & 16 & 1539.49 & 975.56 \\ 
-\hline Matice 2 & 16 & 618.41 & 916.73 \\ 
-\hline Matice 3 & 16 & 1119.20 & 708.47 \\ 
+\hline Matice 1 & 16 & 1539.49 & 975.56 & -36.6 \\ 
+\hline Matice 2 & 16 & 618.41 & 916.73 & 48.2 \\ 
+\hline Matice 3 & 16 & 1119.20 & 708.47 & -36.7 \\ 
 \hline 
-\hline Matice 1 & 24 & 318.38 & 481.98 \\ 
-\hline Matice 2 & 24 & 991.47 & 427.74 \\ 
-\hline Matice 3 & 24 & 485.19 & 423.27 \\ 
+\hline Matice 1 & 24 & 318.38 & 481.98 & 51.4 \\ 
+\hline Matice 2 & 24 & 991.47 & 427.74 & -56.9 \\ 
+\hline Matice 3 & 24 & 485.19 & 423.27 & -12.8 \\ 
 \hline 
 \end{tabular}
 \caption{Paralelní zrychlení algoritmu.}
 \label{paralelni_zrychleni}
 \end{table}
-
+* Zrychlení běhu algoritmu při použití sítě Infiniband oproti použití sítě Ethernet
+\\
 
 Ve všech případech došlo k superlineárnímu zrychlení. Důvodem superlineárního zrychlení bude zřejmě problém s odkládáním dat z paměti na pevný disk (swapping) v případě sekvenčního řešení. V případě paralelního řešení (už při použítí dvou procesorů) k tomuto nedochází, protože je k dispozici výrazně více paměti.
 
 \subsubsection{Efektivnost algoritmu}
+V našem programu dochází k zasílání velkého množství zpráv. Použitím funkce \texttt{MPI\_Pack} by jistě došlo ke snížení zatížení komunikačné sítě tím, že by některé zprávy bylo možné zasílat společně. Zrychlení (zpomalení) běhu algoritmu na síti ethernet oproti síti inifiniband je uvedeno v tabulce č. \ref{paralelni_zrychleni}.
+
+Program by mohl být, jak již bylo uvedeno v předchozím odstavci, upraven tak, aby zasílal menší množství zpráv. Dále by mohl být vylepšen algoritmus žádání o práci tak, aby jednotlivé procesory žádaly o práci nikoliv sekvenčně (od prvního procesoru k poslednímu) ale náhodně.
+
+Paralelní algoritmus je velmi efektivní, pracuje se superlineárním zrychlením. 
+
 \subsubsection{Granularita implementace}
+Empiricky stanovte granularitu vaší implementace, tj., stupeň paralelismu pro danou
+velikost řešeného problému. Stanovte kritéria pro stanovení mezí, za
+kterými již není učinné rozkládat výpočet na menší procesy, protože
+by komunikační náklady prevážily urychlení paralelním výpočtem.
+\\
+\\
+
+%TODO: Upravit - získáno z internetu jako základní poznatek k problematice
+Náš program má nastavenou granularitu počtem pozic které prozkoumá než se začne zabývat příchozími zprávami. Tento počet je nastaven na hodnotu 100 pozic, což odpovídá zhruba 100 000 lokálním operacím. Při vyšší hodnotě je granularita hrubá, odezva procesoru na zprávy příliš pomalá, a výpočtu se nezúčastní všechny procesory naráz. Při nižší hodnotě je granularita příliš jemná, a dochází k nadbytku režie.
+
+Pro instance trvající do několika sekund (prozkoumává se málo pozic) se nevyplatí rozesílat ostatním procesorům data. V tomto případě se čas při zvýšení počtu procesorů nesníží, ale také nezvýší.
+%TODO: Upravit - získáno z internetu jako základní poznatek k problematice
 
 % ============================ Závěr ==================================================================
 \section{Závěr}
 
-Celkové zhodnocení semestrální práce a zkušenosti získaných během
-semestru.
+Celkové zhodnocení semestrální práce a zkušenosti získaných během semestru.
 
 \section{Příloha 1 - schema hlavní smyčky}
 
