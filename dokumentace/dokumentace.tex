@@ -284,7 +284,7 @@ Ve všech případech došlo k superlineárnímu zrychlení. Důvodem superline�
 \subsubsection{Efektivnost algoritmu}
 V našem programu dochází k zasílání velkého množství zpráv. Použitím funkce \texttt{MPI\_Pack} by jistě došlo ke snížení zatížení komunikačné sítě tím, že by některé zprávy bylo možné zasílat společně. Zrychlení (zpomalení) běhu algoritmu na síti ethernet oproti síti inifiniband je uvedeno v tabulce č. \ref{paralelni_zrychleni}.
 
-Program by mohl být, jak již bylo uvedeno v předchozím odstavci, upraven tak, aby zasílal menší množství zpráv. Dále by mohl být vylepšen algoritmus žádání o práci tak, aby jednotlivé procesory žádaly o práci nikoliv sekvenčně (od prvního procesoru k poslednímu) ale náhodně.
+Program by mohl být, jak již bylo uvedeno v předchozím odstavci, upraven tak, aby zasílal menší množství zpráv. Dále by mohl být vylepšen algoritmus žádání o práci tak, aby jednotlivé procesory nežádaly o práci sekvenčně (od prvního procesoru k poslednímu) ale náhodně.
 
 Paralelní algoritmus je velmi efektivní, pracuje se superlineárním zrychlením. 
 
@@ -309,63 +309,38 @@ Celkové zhodnocení semestrální práce a zkušenosti získaných během semes
 
 
 % ============================ Definice problému a popis sekvenčního algoritmu ==================================================================
-%\newpage
-%\begin{thebibliography}{9}
+\newpage
+\begin{thebibliography}{9}
 
 %\addcontentsline{toc}{chapter}{Literatura}
 
-%\bibitem{Aulds_Administrace_Linux}
-%{\em TVRDÍK, P.}
-%       {\bf Parallel Algorithms and Computing}\\
-%       Vydavatelství ČVUT, 2. vydání. Duben 2009
-       
-%\end{thebibliography}
-%\newpage
+\bibitem{Aulds_Administrace_Linux}
+{\em TVRDÍK, P.}
+       {\bf Parallel Algorithms and Computing}\\
+       Vydavatelství ČVUT, 2. vydání. Duben 2009
 
+\bibitem{edux}
+{\em Reif, J. H.}
+       {\bf Synthesis of parallel algorithms}\\
+		Morgan Kaufmann Publ., 1993, ISBN 1-55860-135-X
+
+\bibitem{edux}
+{\em EDUX FIT ČVUT}
+       {\bf edux.fit.cvut.cz}\\
+       \url{https://edux.fit.cvut.cz/courses/MI-PAR/}, [cit. 2010-11-29]
+       
+\end{thebibliography}
+
+\newpage
 \appendix
 
 \section{Schema hlavní smyčky}
 
 \begin{figure}[ht]
 \centering       
-\includegraphics[scale=0.5]{while.jpg}
+\includegraphics[scale=0.33]{while.jpg}
 \caption{Hlavní smyčka paralelního algoritmu.}
 \label{hlavniSmycka}
 \end{figure}
-
-\section{Návod pro vkládání grafů a obrázků do Latexu}
-
-Nejjednodušší způsob vytvoření obrázku je použít vektorový grafický
-editor (např. xfig nebo jfig), ze kterého lze exportovat buď
-\begin{itemize}
-\item postscript formáty (ps nebo eps formát) nebo
-\item latex formáty (v~pořadí prostý latex, latex s~macry epic, eepic, eepicemu). Uvedené pořadí odpovídá růstu
-komplikovanosti obrázků který formát podporuje (prostá latex macra
-umožnují pouze jednoduché, epic makra něco mezi, je třeba
-vyzkoušet).
-
-\end{itemize}
-Následující příklady platí pro všechny případy.
-
-Obrázek v~postscriptu, vycentrovaný a na celou šířku stránky,
-s~popisem a číslem. Všimnete si, jak řídit velikost obrazku.
-
-Obrázek pouze vložený mezi řádky textu, bez popisu a číslování.\\
-
-
-bez čísla a popisu.
-
-Takhle jednoduše můžete poskládat obrázky vedle sebe.
-
-Řídit velikost latexovskych obrázků lze příkazem
-\begin{verbatim}
-\setlength{\unitlength}{0.1mm}
-\end{verbatim}
-které mění měřítko rastru obrázku, Tyto příkazy je ale současně
-nutné vyhodit ze souboru, který xfig vygeneroval.
-
-Pro vytváření grafu lze použít program gnuplot, který umí generovat
-postscriptovy soubor, ktery vložíte do Latexu výše uvedeným
-způsobem.
 
 \end{document}
