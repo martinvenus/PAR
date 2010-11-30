@@ -6,6 +6,9 @@
 \usepackage{ae}
 \usepackage{fancyhdr}
 
+\usepackage[a4paper]{geometry} 
+\geometry{top=3.5cm, bottom=3.5cm, left=3.5cm, right=2.5cm}
+
 \usepackage[dvipdfm]{graphicx}
 \author{Martin Venuš, Jaroslav Líbal}
 
@@ -45,29 +48,29 @@ Kolejní 550/2, 160 00 Praha 6\\[2mm]
 
 \subsection{Vstupní data}
 
-$G(V,E)$ = jednoduchý neorietovaný neohodnocený k-regulární graf o~n uzlech a m hranách\\
-$n$ = přirozené číslo představující počet uzlů grafu G, $n \geq 5$
-$k$ = přirozené číslo řádu jednotek představující stupeň uzlu grafu G, $n \geq k \geq 3$; n a k~nejsou současně obě liché\\
+$G(V,E)$ = jednoduchý neorietovaný neohodnocený k-regulární graf o~$n$ uzlech a $m$ hranách\\
+$n$ = přirozené číslo představující počet uzlů grafu $G$, $n \geq 5$\\
+$k$ = přirozené číslo řádu jednotek představující stupeň uzlu grafu $G$, $n \geq k \geq 3$; $n$ a $k$~nejsou současně obě liché\\
 \\
-Doporučení pro generování G:\\
+Doporučení pro generování $G$:\\
 \\
-Použijte generátor grafu s~volbou typu grafu "-t REG", který vygeneruje souvislý neorientovaný neohodnocený graf.
+Použijte generátor grafu s~volbou typu grafu \texttt{"-t REG"}, který vygeneruje souvislý neorientovaný neohodnocený graf.
 
 
 \subsection{Úkol} 
 
-Nalezněte minimální uzlové obarvení grafu G, či-li zobrazení B: V~$\rightarrow$ N takové, že b=$\left|\{B[x]; x\ in\ V\}\right|$ je minimální. Řešení existuje vždy, nemusí být jednoznačné.
+Nalezněte minimální uzlové obarvení grafu $G$, či-li zobrazení $B$: V~$\rightarrow$ N takové, že b=$\left|\{B[x]; x\ in\ V\}\right|$ je minimální. Řešení existuje vždy, nemusí být jednoznačné.
 
 \subsection{Výstup algoritmu}
 
-Počet použitých barev a výpis uzlového obarvení $B[1..n]$ grafu G ve formě matice sousednosti (barvy uzlů pište na diagonálu matice).\\
+Počet použitých barev a výpis uzlového obarvení $B[1..n]$ grafu $G$ ve formě matice sousednosti (barvy uzlů pište na diagonálu matice).\\
 
 \subsection{Sekvenční algoritmus}
 
-Sekvenční algoritmus je typu BB-DFS s~omezenou hloubkou prohledávaného prostoru. Cena, kterou minimalizuje, je počet barev b. Mezistav je dán částečným obarvenim. Mezistav či koncový stav je přípustný, jestliže žádné 2 sousední uzly nejsou obarvené stejnou barvou. Návrat v~mezistavu provádíme, pokud nelze žádný neobarvený uzel obarvit, aniž by se porušila podminka uzlového barvení.\\
+Sekvenční algoritmus je typu BB-DFS s~omezenou hloubkou prohledávaného prostoru. Cena, kterou minimalizuje, je počet barev $b$. Mezistav je dán částečným obarvenim. Mezistav či koncový stav je přípustný, jestliže žádné 2 sousední uzly nejsou obarvené stejnou barvou. Návrat v~mezistavu provádíme, pokud nelze žádný neobarvený uzel obarvit, aniž by se porušila podminka uzlového barvení.\\
 \\
 Triviální horní mez na $b=k+1$ (každý k-regulární graf lze uzlově obarvit $k+1$ barvami).\\
-Těsná spodní mez na $b=2$. Pokud je G bipartitní, existuje obarvení dvěma barvami.
+Těsná spodní mez na $b=2$. Pokud je $G$ bipartitní, existuje obarvení dvěma barvami.
 
 
 \subsection{Paralelní algoritmus}
@@ -78,9 +81,9 @@ Paralelní algoritmus je typu G-PBB-DFS-D.
 \section{Implementace}
 
 \subsection{Sekvenční algoritmus}
-Sekvenční algoritmus byl implementován přesně dle zadání. Vstupem programu je matice vygenerovaná programem \texttt{generator} s parametrem \texttt{-t REG}. Výstup algoritmu je následující:
+Sekvenční algoritmus byl implementován přesně dle zadání. Vstupem programu je matice vygenerovaná programem \texttt{generator} s~parametrem \texttt{-t REG}. Výstup algoritmu je následující:
 \begin{itemize}
-\item informace o minimálním počtu použitých barev (např. Pocet pouzitych barev: 8)
+\item informace o~minimálním počtu použitých barev (např. Pocet pouzitych barev: 8)
 \item matice, která má na hlavní diagonále obarvení (číslo barvy) jednotlivých vrcholů
 \item čas běhu algoritmu (např. Proces pracoval 376.300000 sekund.)
 \end{itemize}
@@ -94,43 +97,43 @@ Pocet pouzitych barev: 2
 Proces pracoval 0.000000 sekund.
 \end{verbatim}
 
-Časy běhu algoritmu pro různě velká data jsou uvedeny v tabulce č. \ref{doba_behu_sekvencne}.
+Časy běhu algoritmu pro různě velká data jsou uvedeny v~tabulce č. \ref{doba_behu_sekvencne}.
 
 % ============================ Paralelní algoritmus ==================================================================
 \subsection{Paralelní algoritmus}
 
-Před započetím vlastního paralelního výpočtu je procesorem s identifikátorem 0 načtena vstupní matice, která je spolu s informací o počtu jejich vrcholů distribuována pomocí příkazu \textbf{MPI\_Bcast} všem ostatním aktivním procesorům. Každý z procesorů následně provede inicializaci svého lokálního zásobníku a může být zahájen paralelní výpočet.
+Před započetím vlastního paralelního výpočtu je procesorem s~identifikátorem 0 načtena vstupní matice, která je spolu s~informací o~počtu jejich vrcholů distribuována pomocí příkazu \textbf{MPI\_Bcast} všem ostatním aktivním procesorům. Každý z~procesorů následně provede inicializaci svého lokálního zásobníku a může být zahájen paralelní výpočet.
 
-Výpočet paralelního algoritmu procesorem P0 začíná shodně se sekvenčním řešením - procesor vezme první vrchol vstupní matice, nalezne všechny jeho sousedy a ty vloží do zásobníku. V případě, že již nalezl všechny sousedy pak daný vrchol obarví. Poté co provedl obarvení prvního vrcholu začíná výpočet v hlavní smyčce programu. Ostatní procesory aktivně čekají a ptají se ostatních procesorů na práci.
+Výpočet paralelního algoritmu procesorem P0 začíná shodně se sekvenčním řešením - procesor vezme první vrchol vstupní matice, nalezne všechny jeho sousedy a ty vloží do zásobníku. V~případě, že již nalezl všechny sousedy pak daný vrchol obarví. Poté co provedl obarvení prvního vrcholu začíná výpočet v~hlavní smyčce programu. Ostatní procesory aktivně čekají a ptají se ostatních procesorů na práci.
 
 \subsubsection{Hlavní smyčka algoritmu}
 
-Hlavní smyčka programu je naznačena na obrázku v příloze (\ref{hlavniSmycka}). Každý procesor, který má práci, nejprve po obarvení vrcholu obslouží všechny požadavky na práci které obdržel. Pokud již vygeneroval více než jedno dílčí řešení, rozdělí tato řešení na dvě části. První polovinu si ponechá a druhou polovinu odešle spolu se zásobníkem všech doposud objevených vrcholů žádajícímu procesoru. V případě, že již nemá dostatek práce k odeslání odpoví, že nemá žádnou práci k předání a dále pak rozvíjí své poslední dílčí řešení stejným způsobem jako v sekvenčním algoritmu.
+Hlavní smyčka programu je naznačena na obrázku v~příloze (\ref{hlavniSmycka}). Každý procesor, který má práci, nejprve po obarvení vrcholu obslouží všechny požadavky na práci které obdržel. Pokud již vygeneroval více než jedno dílčí řešení, rozdělí tato řešení na dvě části. První polovinu si ponechá a druhou polovinu odešle spolu se zásobníkem všech doposud objevených vrcholů žádajícímu procesoru. V~případě, že již nemá dostatek práce k~odeslání odpoví, že nemá žádnou práci k~předání a dále pak rozvíjí své poslední dílčí řešení stejným způsobem jako v~sekvenčním algoritmu.
 
-V okamžiku kdy procesoru dojde práce a tedy rozvinul všechna svá dílčí řešení, uloží si nejlepší z nich a postupně žádá všechny ostatní procesory o práci dokud ji neobdrží nebo nebyl paralelní výpočet ukončen.
+V~okamžiku kdy procesoru dojde práce a tedy rozvinul všechna svá dílčí řešení, uloží si nejlepší z~nich a postupně žádá všechny ostatní procesory o~práci dokud ji neobdrží nebo nebyl paralelní výpočet ukončen.
 
 \subsubsection{Ukončení paralelního výpočtu}
 
-Iniciovat ukončení paralelního výpočtu může pouze procesor P0. V případě, že procesoru P0 došla práce a jeho požadavky na její přidělení byly opakovaně odmítány, nastaví svou barvu na bílou a pošle peška bílé barvy procesoru P1. Jestliže procesor Pi posílá práci procesoru Pj, kde i>j, pak Pi nastaví svou barvu na hnědou. Ve chvíli kdy procesoru Pi dojde práce, kontroluje příchod peška a v případě že jej obdrží, nastaví barvu peška podle své barvy (z hnědé barvy vytvoří černou) a odešle jej po kružnici procesoru Pi+1. Po odeslání peška se z hnědé barvy stává bílá. Pokud P0 obdrží zpět peška bílé barvy, je možné výpočet ukončit (o tomto informuje všechny ostatní procesory vysláním speciální zprávy), jinak ještě některý z procesorů pracuje a je nutné možnost ukončení algoritmu ověřit znovu později.
+Iniciovat ukončení paralelního výpočtu může pouze procesor P0. V~případě, že procesoru P0 došla práce a jeho požadavky na její přidělení byly opakovaně odmítány, nastaví svou barvu na bílou a pošle peška bílé barvy procesoru P1. Jestliže procesor Pi posílá práci procesoru Pj, kde i>j, pak Pi nastaví svou barvu na hnědou. Ve chvíli kdy procesoru Pi dojde práce, kontroluje příchod peška a v~případě že jej obdrží, nastaví barvu peška podle své barvy (z~hnědé barvy vytvoří černou) a odešle jej po kružnici procesoru Pi+1. Po odeslání peška se z~hnědé barvy stává bílá. Pokud P0 obdrží zpět peška bílé barvy, je možné výpočet ukončit (o~tomto informuje všechny ostatní procesory vysláním speciální zprávy), jinak ještě některý z~procesorů pracuje a je nutné možnost ukončení algoritmu ověřit znovu později.
 
-\subsubsection{Používané konstanty (tagy) ve zprávách}
-\begin{description}
-\item[MESSAGE\_MATRIX] odesílání vstupní matice
-\item[MESSAGE\_JOB\_REQUIRE] žádost o práci
-\item[MESSAGE\_JOB\_REQUIRE\_ANSWER] odpověď na žádost o práci
-\item[MESSAGE\_JOB\_REQUIRE\_COLORS] odesíláme počet barev konfigurace
-\item[MESSAGE\_JOB\_REQUIRE\_CONFIGURATION\_ARRAY] odesíláme konfiguraci
-\item[MESSAGE\_JOB\_REQUIRE\_ITEMS] odesíláme počet prvků v konfiguraci
-\item[MESSAGE\_JOB\_REQUIRE\_STACK\_SIZE] odesíláme velikost zásobníku
-\item[MESSAGE\_JOB\_REQUIRE\_STACK\_TOP] odesíláme vrchol zásobníku
-\item[MESSAGE\_JOB\_REQUIRE\_STACK\_ARRAY] odesíláme zásobník
-\item[MESSAGE\_JOB\_REQUIRE\_DIAG] odesíláme diagonálu matice
-\item[MESSAGE\_JOB\_REQUIRE\_CONFIGURATION\_ARRAY\_SIZE] odesíláme velikost pole konfigurací
-\item[PESEK] odesíláme testovacího peška
-\item[PESEK\_FINAL] odesíláme ukončovacího peška
-\item[MESSAGE\_FINISH\_BEST\_COLORS] procesor odesílá své nejlepší chromatické číslo
-\item[MESSAGE\_FINISH\_BEST] odesíláme číslo procesoru s nejlepší konfigurací
-\end{description}
+%\subsubsection{Používané konstanty (tagy) ve zprávách}
+%\begin{description}
+%\item[MESSAGE\_MATRIX] odesílání vstupní matice
+%\item[MESSAGE\_JOB\_REQUIRE] žádost o práci
+%\item[MESSAGE\_JOB\_REQUIRE\_ANSWER] odpověď na žádost o práci
+%\item[MESSAGE\_JOB\_REQUIRE\_COLORS] odesíláme počet barev konfigurace
+%\item[MESSAGE\_JOB\_REQUIRE\_CONFIGURATION\_ARRAY] odesíláme konfiguraci
+%\item[MESSAGE\_JOB\_REQUIRE\_ITEMS] odesíláme počet prvků v konfiguraci
+%\item[MESSAGE\_JOB\_REQUIRE\_STACK\_SIZE] odesíláme velikost zásobníku
+%\item[MESSAGE\_JOB\_REQUIRE\_STACK\_TOP] odesíláme vrchol zásobníku
+%\item[MESSAGE\_JOB\_REQUIRE\_STACK\_ARRAY] odesíláme zásobník
+%\item[MESSAGE\_JOB\_REQUIRE\_DIAG] odesíláme diagonálu matice
+%\item[MESSAGE\_JOB\_REQUIRE\_CONFIGURATION\_ARRAY\_SIZE] odesíláme velikost pole konfigurací
+%\item[PESEK] odesíláme testovacího peška
+%\item[PESEK\_FINAL] odesíláme ukončovacího peška
+%\item[MESSAGE\_FINISH\_BEST\_COLORS] procesor odesílá své nejlepší chromatické číslo
+%\item[MESSAGE\_FINISH\_BEST] odesíláme číslo procesoru s nejlepší konfigurací
+%\end{description}
 
 \subsubsection{Konstanty pro barvy peška a procesoru}
 \begin{description}
@@ -199,7 +202,7 @@ REG = k-regulární graf
 \label{doba_behu_sekvencne}	
 \end{table}
 
-%\newpage
+\newpage
 \subsection{Paralelní řešení}
 \begin{table}[ht]
 \centering
@@ -279,23 +282,23 @@ REG = k-regulární graf
 * Zrychlení běhu algoritmu při použití sítě Infiniband oproti použití sítě Ethernet
 \\
 
-Ve všech případech došlo k superlineárnímu zrychlení. Důvodem superlineárního zrychlení bude zřejmě problém s odkládáním dat z paměti na pevný disk (swapping) v případě sekvenčního řešení. V případě paralelního řešení (už při použítí dvou procesorů) k tomuto nedochází, protože je k dispozici výrazně více paměti.
+Ve všech případech došlo k~superlineárnímu zrychlení. Důvodem superlineárního zrychlení bude zřejmě problém s~odkládáním dat z~paměti na pevný disk (swapping) v~případě sekvenčního řešení. V~případě paralelního řešení (už při použítí dvou procesorů) k~tomuto nedochází, protože je k~dispozici výrazně více paměti.
 
 \subsubsection{Efektivnost algoritmu}
-V našem programu dochází k zasílání velkého množství zpráv. Použitím funkce \texttt{MPI\_Pack} by jistě došlo ke snížení zatížení komunikačné sítě tím, že by některé zprávy bylo možné zasílat společně. Zrychlení (zpomalení) běhu algoritmu na síti ethernet oproti síti inifiniband je uvedeno v tabulce č. \ref{paralelni_zrychleni}.
+V~našem programu dochází k~zasílání velkého množství zpráv. Použitím funkce \texttt{MPI\_Pack} by jistě došlo ke snížení zatížení komunikačné sítě tím, že by některé zprávy bylo možné zasílat společně. Zrychlení (zpomalení) běhu algoritmu na síti ethernet oproti síti inifiniband je uvedeno v~tabulce č. \ref{paralelni_zrychleni}.
 
-Program by mohl být, jak již bylo uvedeno v předchozím odstavci, upraven tak, aby zasílal menší množství zpráv. Dále by mohl být vylepšen algoritmus žádání o práci tak, aby jednotlivé procesory nežádaly o práci sekvenčně (od prvního procesoru k poslednímu) ale náhodně.
+Program by mohl být, jak již bylo uvedeno v~předchozím odstavci, upraven tak, aby zasílal menší množství zpráv. Dále by mohl být vylepšen algoritmus žádání o~práci tak, aby jednotlivé procesory nežádaly o~práci sekvenčně (od prvního procesoru k~poslednímu) ale náhodně.
 
 Paralelní algoritmus je velmi efektivní, pracuje se superlineárním zrychlením. 
 
 \subsubsection{Granularita implementace}
 
-Hned ve chvíli, kdy má první procesor k dispozici alespoň dvě dílčí konfigurace, je vhodné jednu (resp. polovinu) předat jinému z procesorů ke zpracování. V počáteční fázi běhu algoritmu jsou totiž tato dílčí řešení ještě málo rozvinutá a vyplatí se tedy předávat i pouhé jedno řešení.
+Hned ve chvíli, kdy má první procesor k~dispozici alespoň dvě dílčí konfigurace, je vhodné jednu (resp. polovinu) předat jinému z~procesorů ke zpracování. V~počáteční fázi běhu algoritmu jsou totiž tato dílčí řešení ještě málo rozvinutá a vyplatí se tedy předávat i pouhé jedno řešení.
 
 % ============================ Závěr ==================================================================
 \section{Závěr}
 
-Celkové zhodnocení semestrální práce a zkušenosti získaných během semestru.
+Práce na semestrální práci byla časově velmi náročná. Prohloubili jsme si během ní znalosti programování v~jazyce C a zároveň si vyzkoušeli programování paralelních algoritmů a jejich aplikaci na výpočetním clusteru Star. Všechny body zadání se nám podařilo splnit v~plném rozsahu.
 
 
 % ============================ Definice problému a popis sekvenčního algoritmu ==================================================================
@@ -328,7 +331,7 @@ Celkové zhodnocení semestrální práce a zkušenosti získaných během semes
 
 \begin{figure}[ht]
 \centering       
-\includegraphics[scale=0.33]{while.jpg}
+\includegraphics[scale=0.405]{while.jpg}
 \caption{Hlavní smyčka paralelního algoritmu.}
 \label{hlavniSmycka}
 \end{figure}
