@@ -31,7 +31,7 @@
        Jaroslav Líbal\\
        Martin Venuš\\[5mm]
 FIT ČVUT\\[2mm]
-magisterské studijum\\[2mm]
+magisterské studium\\[2mm]
 Kolejní 550/2, 160 00 Praha 6\\[2mm]
 29. listopadu 2010
 \end{center}
@@ -48,7 +48,7 @@ Kolejní 550/2, 160 00 Praha 6\\[2mm]
 
 \subsection{Vstupní data}
 
-$G(V,E)$ = jednoduchý neorietovaný neohodnocený k-regulární graf o~$n$ uzlech a $m$ hranách\\
+$G(V,E)$ = jednoduchý neorientovaný neohodnocený k-regulární graf o~$n$ uzlech a $m$ hranách\\
 $n$ = přirozené číslo představující počet uzlů grafu $G$, $n \geq 5$\\
 $k$ = přirozené číslo řádu jednotek představující stupeň uzlu grafu $G$, $n \geq k \geq 3$; $n$ a $k$~nejsou současně obě liché\\
 \\
@@ -67,7 +67,7 @@ Počet použitých barev a výpis uzlového obarvení $B[1..n]$ grafu $G$ ve for
 
 \subsection{Sekvenční algoritmus}
 
-Sekvenční algoritmus je typu BB-DFS s~omezenou hloubkou prohledávaného prostoru. Cena, kterou minimalizuje, je počet barev $b$. Mezistav je dán částečným obarvenim. Mezistav či koncový stav je přípustný, jestliže žádné 2 sousední uzly nejsou obarvené stejnou barvou. Návrat v~mezistavu provádíme, pokud nelze žádný neobarvený uzel obarvit, aniž by se porušila podminka uzlového barvení.\\
+Sekvenční algoritmus je typu BB-DFS s~omezenou hloubkou prohledávaného prostoru. Cena, kterou minimalizuje, je počet barev $b$. Mezistav je dán částečným obarvením. Mezistav či koncový stav je přípustný, jestliže žádné 2 sousední uzly nejsou obarvené stejnou barvou. Návrat v~mezistavu provádíme, pokud nelze žádný neobarvený uzel obarvit, aniž by se porušila podmínka uzlového barvení.\\
 \\
 Triviální horní mez na $b=k+1$ (každý k-regulární graf lze uzlově obarvit $k+1$ barvami).\\
 Těsná spodní mez na $b=2$. Pokud je $G$ bipartitní, existuje obarvení dvěma barvami.
@@ -104,7 +104,7 @@ Proces pracoval 0.000000 sekund.
 
 Před započetím vlastního paralelního výpočtu je procesorem s~identifikátorem 0 načtena vstupní matice, která je spolu s~informací o~počtu jejich vrcholů distribuována pomocí příkazu \textbf{MPI\_Bcast} všem ostatním aktivním procesorům. Každý z~procesorů následně provede inicializaci svého lokálního zásobníku a může být zahájen paralelní výpočet.
 
-Výpočet paralelního algoritmu procesorem P0 začíná shodně se sekvenčním řešením - procesor vezme první vrchol vstupní matice, nalezne všechny jeho sousedy a ty vloží do zásobníku. V~případě, že již nalezl všechny sousedy pak daný vrchol obarví. Poté co provedl obarvení prvního vrcholu začíná výpočet v~hlavní smyčce programu. Ostatní procesory aktivně čekají a ptají se ostatních procesorů na práci.
+Výpočet paralelního algoritmu procesorem $P_0$ začíná shodně se sekvenčním řešením - procesor vezme první vrchol vstupní matice, nalezne všechny jeho sousedy a ty vloží do zásobníku. V~případě, že již nalezl všechny sousedy pak daný vrchol obarví. Poté co provedl obarvení prvního vrcholu začíná výpočet v~hlavní smyčce programu. Ostatní procesory aktivně čekají a ptají se ostatních procesorů na práci.
 
 \subsubsection{Hlavní smyčka algoritmu}
 
@@ -114,7 +114,7 @@ V~okamžiku kdy procesoru dojde práce a tedy rozvinul všechna svá dílčí ř
 
 \subsubsection{Ukončení paralelního výpočtu}
 
-Iniciovat ukončení paralelního výpočtu může pouze procesor P0. V~případě, že procesoru P0 došla práce a jeho požadavky na její přidělení byly opakovaně odmítány, nastaví svou barvu na bílou a pošle peška bílé barvy procesoru P1. Jestliže procesor Pi posílá práci procesoru Pj, kde i>j, pak Pi nastaví svou barvu na hnědou. Ve chvíli kdy procesoru Pi dojde práce, kontroluje příchod peška a v~případě že jej obdrží, nastaví barvu peška podle své barvy (z~hnědé barvy vytvoří černou) a odešle jej po kružnici procesoru Pi+1. Po odeslání peška se z~hnědé barvy stává bílá. Pokud P0 obdrží zpět peška bílé barvy, je možné výpočet ukončit (o~tomto informuje všechny ostatní procesory vysláním speciální zprávy), jinak ještě některý z~procesorů pracuje a je nutné možnost ukončení algoritmu ověřit znovu později.
+Iniciovat ukončení paralelního výpočtu může pouze procesor $P_0$. V~případě, že procesoru $P_0$ došla práce a jeho požadavky na její přidělení byly opakovaně odmítány, nastaví svou barvu na bílou a pošle peška bílé barvy procesoru $P_1$. Jestliže procesor Pi posílá práci procesoru $P_j$, kde $i>j$, pak $P_i$ nastaví svou barvu na hnědou. Ve chvíli kdy procesoru $P_i$ dojde práce, kontroluje příchod peška a v~případě že jej obdrží, nastaví barvu peška podle své barvy (z~hnědé barvy vytvoří černou) a odešle jej po kružnici procesoru $P_{i+1}$. Po odeslání peška se z~hnědé barvy stává bílá. Pokud $P_0$ obdrží zpět peška bílé barvy, je možné výpočet ukončit (o~tomto informuje všechny ostatní procesory vysláním speciální zprávy), jinak ještě některý z~procesorů pracuje a je nutné možnost ukončení algoritmu ověřit znovu později.
 
 %\subsubsection{Používané konstanty (tagy) ve zprávách}
 %\begin{description}
@@ -135,12 +135,12 @@ Iniciovat ukončení paralelního výpočtu může pouze procesor P0. V~případ
 %\item[MESSAGE\_FINISH\_BEST] odesíláme číslo procesoru s nejlepší konfigurací
 %\end{description}
 
-\subsubsection{Konstanty pro barvy peška a procesoru}
-\begin{description}
-\item[PESEK\_WHITE] bílá
-\item[PESEK\_BLACK] černá
-\item[PESEK\_BROWN] hnědá
-\end{description}
+%\subsubsection{Konstanty pro barvy peška a procesoru}
+%\begin{description}
+%\item[PESEK\_WHITE] bílá
+%\item[PESEK\_BLACK] černá
+%\item[PESEK\_BROWN] hnědá
+%\end{description}
 
 % ============================ Naměřené výsledky a vyhodnocení ==================================================================
 \section{Naměřené výsledky a vyhodnocení}
@@ -149,23 +149,23 @@ Iniciovat ukončení paralelního výpočtu může pouze procesor P0. V~případ
 \begin{enumerate}
 \item Zvolte tři instance problému s~takovou velikostí vstupních dat, pro které má
 sekvenční algoritmus časovou složitost kolem 5, 10 a 15 minut. Pro
-meření čas potřebný na čtení dat z~disku a uložení na disk
+měření čas potřebný na čtení dat z~disku a uložení na disk
 neuvažujte a zakomentujte ladící tisky, logy, zprávy a výstupy.
 \item Měřte paralelní čas při použití $i=2,\cdot,32$ procesorů na sítích Ethernet a InfiniBand.
 %\item Pri mereni kazde instance problemu na dany pocet procesoru spoctete pro vas algoritmus dynamicke delby prace celkovy pocet odeslanych zadosti o praci, prumer na 1 procesor a jejich uspesnost.
 %\item Mereni pro dany pocet procesoru a instanci problemu provedte 3x a pouzijte prumerne hodnoty.
-\item Z~naměřených dat sestavte grafy zrychlení $S(n,p)$. Zjistěte, zda a za jakych podmínek
+\item Z~naměřených dat sestavte grafy zrychlení $S(n,p)$. Zjistěte, zda a za jakých podmínek
 došlo k~superlineárnímu zrychlení a pokuste se je zdůvodnit.
-\item Vyhodnoďte komunikační složitost dynamického vyvažování zátěže a posuďte
+\item Vyhodnoťte komunikační složitost dynamického vyvažování zátěže a posuďte
 vhodnost vámi implementovaného algoritmu pro hledání dárce a dělení
-zásobníku pri řešení vašeho problému. Posuďte efektivnost a
+zásobníku při řešení vašeho problému. Posuďte efektivnost a
 škálovatelnost algoritmu. Popište nedostatky vaší implementace a
 navrhněte zlepšení.
 \item Empiricky stanovte
 granularitu vaší implementace, tj., stupeň paralelismu pro danou
 velikost řešeného problému. Stanovte kritéria pro stanovení mezí, za
-kterými již není učinné rozkládat výpočet na menší procesy, protože
-by komunikační náklady prevážily urychlení paralelním výpočtem.
+kterými již není účinné rozkládat výpočet na menší procesy, protože
+by komunikační náklady převážily urychlení paralelním výpočtem.
 \end{enumerate}
 
 \subsection{Matice pro měření}
@@ -207,7 +207,7 @@ REG = k-regulární graf
 \begin{table}[ht]
 \centering
 \begin{tabular}{|l|c|c|c|c|}
-\hline \textbf{Typ matice} & \textbf{Počet procesorů} & \textbf{čas - ethernet [s]} & \textbf{čas - infiniband [s]} \\
+\hline \textbf{Typ matice} & \textbf{Počet procesorů} & \textbf{čas - Ethernet [s]} & \textbf{čas - InfiniBand [s]} \\
 \hline 
 \hline Matice 1 & 2 & 0.293 & 0.237 \\ 
 \hline Matice 2 & 2 & 0.486 & 0.473 \\ 
@@ -249,7 +249,7 @@ REG = k-regulární graf
 \begin{table}[ht]
 \centering
 \begin{tabular}{|l|c|c|c|c|}
-\hline \textbf{Typ matice} & \textbf{Počet procesorů} & \textbf{Ethernet} & \textbf{Infiniband} & * \\
+\hline \textbf{Typ matice} & \textbf{Počet procesorů} & \textbf{Ethernet} & \textbf{InfiniBand} & * \\
 \hline 
 \hline Matice 1 & 2 & 1245.26 & 1539.49 & 23.6 \\ 
 \hline Matice 2 & 2 & 750.74 & 771.37 & 2.7 \\ 
@@ -279,13 +279,13 @@ REG = k-regulární graf
 \caption{Paralelní zrychlení algoritmu.}
 \label{paralelni_zrychleni}
 \end{table}
-* Zrychlení běhu algoritmu při použití sítě Infiniband oproti použití sítě Ethernet
+* Zrychlení běhu algoritmu při použití sítě InfiniBand oproti použití sítě Ethernet
 \\
 
-Ve všech případech došlo k~superlineárnímu zrychlení. Důvodem superlineárního zrychlení bude zřejmě problém s~odkládáním dat z~paměti na pevný disk (swapping) v~případě sekvenčního řešení. V~případě paralelního řešení (už při použítí dvou procesorů) k~tomuto nedochází, protože je k~dispozici výrazně více paměti.
+Ve všech případech došlo k~superlineárnímu zrychlení. Důvodem superlineárního zrychlení bude zřejmě problém s~odkládáním dat z~paměti na pevný disk (swapping) v~případě sekvenčního řešení. V~případě paralelního řešení (už při použití dvou procesorů) k~tomuto nedochází, protože je k~dispozici výrazně více paměti.
 
 \subsubsection{Efektivnost algoritmu}
-V~našem programu dochází k~zasílání velkého množství zpráv. Použitím funkce \texttt{MPI\_Pack} by jistě došlo ke snížení zatížení komunikačné sítě tím, že by některé zprávy bylo možné zasílat společně. Zrychlení (zpomalení) běhu algoritmu na síti ethernet oproti síti inifiniband je uvedeno v~tabulce č. \ref{paralelni_zrychleni}.
+V~našem programu dochází k~zasílání velkého množství zpráv. Použitím funkce \texttt{MPI\_Pack} by jistě došlo ke snížení zatížení komunikační sítě tím, že by některé zprávy bylo možné zasílat společně. Zrychlení (zpomalení) běhu algoritmu na síti Ethernet oproti síti InfiniBand je uvedeno v~tabulce č. \ref{paralelni_zrychleni}.
 
 Program by mohl být, jak již bylo uvedeno v~předchozím odstavci, upraven tak, aby zasílal menší množství zpráv. Dále by mohl být vylepšen algoritmus žádání o~práci tak, aby jednotlivé procesory nežádaly o~práci sekvenčně (od prvního procesoru k~poslednímu) ale náhodně.
 
