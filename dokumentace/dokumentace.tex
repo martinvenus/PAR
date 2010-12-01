@@ -104,13 +104,13 @@ Proces pracoval 0.000000 sekund.
 
 Před započetím vlastního paralelního výpočtu je procesorem s~identifikátorem 0 načtena vstupní matice, která je spolu s~informací o~počtu jejich vrcholů distribuována pomocí příkazu \textbf{MPI\_Bcast} všem ostatním aktivním procesorům. Každý z~procesorů následně provede inicializaci svého lokálního zásobníku a může být zahájen paralelní výpočet.
 
-Výpočet paralelního algoritmu procesorem $P_0$ začíná shodně se sekvenčním řešením - procesor vezme první vrchol vstupní matice, nalezne všechny jeho sousedy a ty vloží do zásobníku. V~případě, že již nalezl všechny sousedy pak daný vrchol obarví. Poté co provedl obarvení prvního vrcholu začíná výpočet v~hlavní smyčce programu. Ostatní procesory aktivně čekají a ptají se ostatních procesorů na práci.
+Výpočet paralelního algoritmu procesorem $P_0$ začíná shodně se sekvenčním řešením - procesor vezme první vrchol vstupní matice, nalezne všechny jeho sousedy a ty vloží do zásobníku. V~případě, že již nalezl všechny sousedy pak daný vrchol obarví. Poté co provedl obarvení prvního vrcholu začíná výpočet v~hlavní smyčce programu. Ostatní procesory aktivně čekají a ptají se zbylých procesorů na práci (sekvenčně od procesoru s nejnižším indexem).
 
 \subsubsection{Hlavní smyčka algoritmu}
 
 Hlavní smyčka programu je naznačena na obrázku v~příloze (\ref{hlavniSmycka}). Každý procesor, který má práci, nejprve po obarvení vrcholu obslouží všechny požadavky na práci které obdržel. Pokud již vygeneroval více než jedno dílčí řešení, rozdělí tato řešení na dvě části. První polovinu si ponechá a druhou polovinu odešle spolu se zásobníkem všech doposud objevených vrcholů žádajícímu procesoru. V~případě, že již nemá dostatek práce k~odeslání odpoví, že nemá žádnou práci k~předání a dále pak rozvíjí své poslední dílčí řešení stejným způsobem jako v~sekvenčním algoritmu.
 
-V~okamžiku kdy procesoru dojde práce a tedy rozvinul všechna svá dílčí řešení, uloží si nejlepší z~nich a postupně žádá všechny ostatní procesory o~práci dokud ji neobdrží nebo nebyl paralelní výpočet ukončen.
+V~okamžiku kdy procesoru dojde práce a tedy rozvinul všechna svá dílčí řešení si nejlepší z~nich uloží a sekvenčně žádá všechny ostatní procesory o~práci dokud ji neobdrží nebo nebyl paralelní výpočet ukončen.
 
 \subsubsection{Ukončení paralelního výpočtu}
 
